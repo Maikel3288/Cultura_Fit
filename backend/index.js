@@ -1,4 +1,5 @@
-import fastify from 'fastify';
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -6,13 +7,13 @@ import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore';
 
 
-
+const fastify = Fastify();
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 // Middleware CORS en Fastify
-fastify.register(require('@fastify/cors'), {
+await fastify.register(cors, {
   origin: '*',
 });
 
