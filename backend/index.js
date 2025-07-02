@@ -24,7 +24,7 @@ fastify.get('/', async (request, reply) => {
 
 
 // Iniciar servidor
-fastify.listen({ port: PORT }, {host: HOST}, (err, address) => {
+fastify.listen({ port: PORT, host: HOST}, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
