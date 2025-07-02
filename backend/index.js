@@ -18,7 +18,7 @@ await fastify.register(cors, {
 });
 
 // Rutas
-const helloWorld = require('./routes/helloword.js');
+import helloWorld from './controllers/helloWorld.js';
 fastify.register(helloWorld, { prefix: '/helloword'});
 
 //Añadir datos al servidor
