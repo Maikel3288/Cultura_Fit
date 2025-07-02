@@ -1,13 +1,12 @@
-const fastify = require('fastify')({ logger: true });
-require('dotenv').config();
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+import fastify from 'fastify';
+import dotenv from 'dotenv';
+dotenv.config();
 
-initializeApp({
-  credential: applicationDefault()
-});
+import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
+import { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore';
 
-const db = getFirestore();
+
+
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -18,10 +17,12 @@ fastify.register(require('@fastify/cors'), {
 });
 
 // Rutas
-fastify.get('/', async (request, reply) => {
-  return { hello: 'hola world' };
-});
+const helloWorld = require('./routes/helloword.js');
+fastify.register(helloWorld, { prefix: '/helloword'});
 
+//Añadir datos al servidor
+import {quickstartAddData, db} from '.controllers/quickstartAddData.js';
+quickstartAddData(db)
 
 // Iniciar servidor
 fastify.listen({ port: PORT, host: HOST}, (err, address) => {
