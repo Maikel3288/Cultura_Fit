@@ -10,6 +10,7 @@ initializeApp({
 const db = getFirestore();
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Middleware CORS en Fastify
 fastify.register(require('@fastify/cors'), {
@@ -23,7 +24,7 @@ fastify.get('/', async (request, reply) => {
 
 
 // Iniciar servidor
-fastify.listen({ port: PORT }, (err, address) => {
+fastify.listen({ port: PORT }, {host: HOST}, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
