@@ -1,17 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config();
-import admin from 'firebase-admin'
-const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+import { db } from '../config/database.js';
 
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-export const db = getFirestore();
-
-
-export async function quickstartAddData(db) {
+export async function quickstartAddData() {
   // [START firestore_setup_dataset_pt1]
   const docRef = db.collection('users').doc('alovelace');
 

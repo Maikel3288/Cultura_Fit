@@ -21,8 +21,8 @@ const helloWorld = require('./routes/helloword.js');
 fastify.register(helloWorld, { prefix: '/helloword'});
 
 //Añadir datos al servidor
-import {quickstartAddData, db} from '.controllers/quickstartAddData.js';
-quickstartAddData(db)
+import {quickstartAddData} from '.controllers/quickstartAddData.js';
+quickstartAddData()
 
 // Iniciar servidor
 fastify.listen({ port: PORT, host: HOST}, (err, address) => {
