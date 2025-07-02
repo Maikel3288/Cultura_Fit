@@ -18,8 +18,8 @@ await fastify.register(cors, {
 });
 
 // Rutas
-import helloWorld from './controllers/helloWorld.js';
-fastify.register(helloWorld, { prefix: '/helloword'});
+import helloWorld from './routes/helloWorld.js';
+fastify.register(helloWorld, { prefix: '/helloWorld'});
 
 //Añadir datos al servidor
 import {quickstartAddData} from './controllers/quickstartAddData.js'
