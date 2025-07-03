@@ -23,7 +23,7 @@ fastify.register(helloWorld, { prefix: '/helloWorld'});
 
 //Añadir datos al servidor
 import {quickstartAddData} from './controllers/quickstartAddData.js'
-quickstartAddData()
+//quickstartAddData()
 
 // Iniciar servidor
 fastify.listen({ port: PORT, host: HOST}, (err, address) => {

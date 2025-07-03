@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import admin from 'firebase-admin'
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 

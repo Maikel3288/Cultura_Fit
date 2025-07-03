@@ -1,16 +1,31 @@
-import { db } from '../../../backend/config/database.js'
-import { User, Workout, Subscription, CalendarEvent } from '../types/models.js'
+import { db } from "../config/firebase.js";
+//Parte	Significado
+  // @typedef	Define un tipo personalizado.
+  // {import("../...").User}	Importa la interfaz User desde un models.ts.
+  // User (al final)	Nombre local del tipo que vas a usar.
+/** @typedef {import("../types/models").User} User */
+/** @typedef {import("../types/models").Workout} Workout */
+/** @typedef {import("../types/models").Session} Session */
 
+
+  // @param	Indica que es un parámetro de la función.
+  // {User}	Tipo del parámetro (User, definido antes con @typedef).
+  // user	Nombre del parámetro.
+/**
+ * Añade un nuevo usuario
+ * @param {User} user
+ * @returns {Promise<string>} ID del documento creado
+ */
 
 const userCollection = db.collection('users')
 
 // Crear documento genérico
 // src/services/firestoreService.js
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
 
 
-async function addDocument(collectionName, data) {
+
+export async function addDocument(collectionName, data) {
   try {
     const colRef = collection(db, collectionName);
     const docRef = await addDoc(colRef, data);
@@ -24,7 +39,7 @@ async function addDocument(collectionName, data) {
 
 
 //Añadir usuario
-async function addUser(user) {
+export async function addUser(user) {
   return await addDocument("users", user);
 }
 
