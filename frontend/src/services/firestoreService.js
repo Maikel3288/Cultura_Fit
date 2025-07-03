@@ -1,4 +1,4 @@
-import { db } from "../config/firebase.js";
+import { db } from "../../config/firebase.js";
 //Parte	Significado
   // @typedef	Define un tipo personalizado.
   // {import("../...").User}	Importa la interfaz User desde un models.ts.
@@ -17,7 +17,6 @@ import { db } from "../config/firebase.js";
  * @returns {Promise<string>} ID del documento creado
  */
 
-const userCollection = db.collection('users')
 
 // Crear documento genérico
 // src/services/firestoreService.js
