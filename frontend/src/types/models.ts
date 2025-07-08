@@ -1,11 +1,11 @@
 // src/types/models.ts
-
+import { Timestamp } from "firebase/firestore";
 export interface User {
   uid: string;
   email: string;
   displayName: string;
   role: "free" | "premium"; // Nivel de membresía del usuario
-  createdAt: Date;          // Fecha de creación del usuario
+  createdAt?: Date | Timestamp; // Compatible con Firestore y JS 
 }
 
 export interface Subscription {

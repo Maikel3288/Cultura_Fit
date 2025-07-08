@@ -1,7 +1,7 @@
 import {Link} from 'react-router-dom';
 import {useEffect, useState } from 'react';
 import '../css/App.css';
-import { addUser} from '../services/firestoreService.js'
+import { addUser} from '../routes/firestoreService.js'
 
 export const Home = () => {
 
