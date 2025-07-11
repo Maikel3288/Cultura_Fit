@@ -16,7 +16,7 @@ export const fetchClientSecret = async (user) => {
 
     // Llamada al servidor para crear sesión de checkout
     console.log(idToken)
-    const res = await axios.post(`${backendUrl}/api/checkout/create-checkout-session`, 
+    const res = await axios.post(`${backendUrl}/api/checkout/create-payment-intent`, 
       {},
       {
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${idToken}`}

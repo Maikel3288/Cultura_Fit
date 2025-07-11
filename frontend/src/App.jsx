@@ -11,7 +11,6 @@ import Register from "./pages/Register"
 import Login from "./pages/Login"
 import Upgrade from './pages/Upgrade';
 import {CheckoutProvider} from '@stripe/react-stripe-js';
-import {stripePromise, fetchClientSecret, appearance} from '../controllers/checkout.js'
 import CheckOut from './pages/CheckOut.jsx'
 import Return from './components/Return.jsx' 
 import Success from './pages/Success.jsx';

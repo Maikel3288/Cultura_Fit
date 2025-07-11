@@ -13,17 +13,10 @@ export const Upgrade = () => {
 
   const handleUpgrade = async () => {
     setLoading(true);
-
-    const idToken = await getIdToken(user)
-
-    const resdataClientSecret = await fetchClientSecret(user)
-
-    console.log(resdataClientSecret)
-
-    navigate('/checkout', { state: { clientSecret: resdataClientSecret }});
+    navigate('/checkout');
     setLoading(false)
 
-    return resdataClientSecret
+    return 
 
   };
 

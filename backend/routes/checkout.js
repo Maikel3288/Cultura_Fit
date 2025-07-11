@@ -27,11 +27,7 @@ const stripe = new Stripe(stripePrivateKey);
 
 export const checkOut = async (fastify) => {
 
-fastify.post("/create-checkout-session", async (req, reply) => {
-    
-// Aquí podrías extraer el token del header si quieres:
-  const authHeader = req.headers['authorization'] || '';
-  const idToken = authHeader.replace('Bearer ', '');
+fastify.post("/create-payment-intent", async (req, reply) => {
 
   const isAuthenticated = await authenticate(req, reply);
 
@@ -40,32 +36,38 @@ fastify.post("/create-checkout-session", async (req, reply) => {
     const paymentIntent = await stripe.paymentIntents.create({
         amount: 1000,
         currency: 'eur',
+        // Se asocia el intento de pago al usuario
+        metadata: {
+            firebaseUID: req.user.uid,
+            email: req.user.email,
+        }
     });
 
 
-  return reply.send({ clientSecret: paymentIntent.client_secret });
+    reply.send({ clientSecret: paymentIntent.client_secret });
    
 });
 
 
-fastify.get("/session-status", async (req, reply) => {
-    const sessionId = req.query.session_id;
+// fastify.get("/session-status", async (req, reply) => {
+//     const sessionId = req.query.session_id;
 
-    if (!sessionId) {
-        return reply.status(400).send({ error: 'session_id es requerido' });
-    }
+//     if (!sessionId) {
+//         return reply.status(400).send({ error: 'session_id es requerido' });
+//     }
 
-    try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+//     try {
+//         const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-        return reply.send({
-        status: session.payment_status,
-        customer_email: session.customer_details?.email || '',
-        });
-    } 
-    catch (error) {
-        req.log.error(error); // Registro del error en el logger de Fastify
-        return reply.status(500).send({ error: 'No se pudo recuperar la sesión' });
-    }
-});
+//         return reply.send({
+//         status: session.payment_status,
+//         customer_email: session.customer_details?.email || '',
+//         });
+//     } 
+//     catch (error) {
+//         req.log.error(error); // Registro del error en el logger de Fastify
+//         return reply.status(500).send({ error: 'No se pudo recuperar la sesión' });
+//     }
+// });
+// 
 }

@@ -1,14 +1,13 @@
 import { 
-    EmbeddedCheckoutProvider, 
-    EmbeddedCheckout, 
-    CardElement, 
+    CardElement, // Input que contiene el numero de la tarjeta, fecha de caducidad y cvc
     useStripe, 
     useElements,
-    PaymentElement,
-    useCheckout, } from '@stripe/react-stripe-js';
-import { stripePromise, fetchClientSecret, appearance } from '../../controllers/checkout';
-import { useEffect, useState } from 'react';
-
+    CardNumberElement,
+    CardExpiryElement,
+    CardCvcElement,
+    } from '@stripe/react-stripe-js';
+import { useState, useEffect, useStatem } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 const CheckoutForm = ({ clientSecret }) => {
@@ -16,40 +15,101 @@ const CheckoutForm = ({ clientSecret }) => {
   const elements = useElements();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!stripe || !elements) return;
 
     setIsLoading(true);
 
-    const result = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        // Aquí puedes personalizar la URL de éxito
-        return_url: "https://localhost:5000/checkout/success",
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
       },
     });
 
     if (result.error) {
       setMessage(result.error.message);
     } else {
-      setMessage("Procesando el pago...");
+      if (result.paymentIntent.status === 'succeeded') {
+        console.log('Pago completado 🎉');
+        navigate('/success')
+      }
     }
 
     setIsLoading(false);
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement id="payment-element" />
-      <button className="btn" style={{ marginTop: '1rem' }} disabled={isLoading || !stripe || !elements} id="submit">
-        {isLoading ? "Procesando..." : "Pagar"}
-      </button>
-      {message && <div id="payment-message">{message}</div>}
-    </form>
-  );
+const myStyle = {
+  base: {
+    fontSize: '1rem',
+    color: '#14171A',
+    fontWeight: '600',
+    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+    letterSpacing: '0.02em',
+    padding: '0.75rem 0.75rem',
+    '::placeholder': {
+      color: '#657786',  // gris
+      fontWeight: '400',
+    },
+    ':-webkit-autofill': {
+      color: '#14171A',
+    },
+  },
+  invalid: {
+    color: '#E0245E', // rojo 
+    iconColor: '#E0245E',
+  }
+
 };
+
+return (
+  <form className="checkout" onSubmit={handleSubmit}>
+    <h2>Pago con tarjeta</h2>
+
+    <div className="input-group">
+      <label>Nombre completo</label>
+      <input
+        type="text"
+        name="name"
+        placeholder="Nombre y Apellidos"
+        required
+        className="stripe-input"
+      />
+    </div>
+
+    <div className="input-group">
+      <label>Número de tarjeta</label>
+      <CardNumberElement
+        options={{ style: myStyle }}
+        className="stripe-input"
+      />
+    </div>
+
+    <div className="input-group">
+      <div>
+        <label>Fecha vencimiento</label>
+        <CardExpiryElement
+          options={{ style: myStyle }}
+          className="stripe-input"
+        />
+      </div>
+
+      <div className="input-group">
+        <label>CVC</label>
+        <CardCvcElement
+          options={{ style: myStyle }}
+          className="stripe-input"
+        />
+      </div>
+    </div>
+
+    <button className="btn" type="submit">Pagar</button>
+  </form>
+);
+
+}
 
 export default CheckoutForm;
