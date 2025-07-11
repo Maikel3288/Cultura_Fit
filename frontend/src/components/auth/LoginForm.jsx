@@ -12,10 +12,10 @@ export default function LoginForm() {
 
   return (
     <>
-        <form onSubmit={handleSubmit}>
+        <form className="login" onSubmit={handleSubmit}>
             <input placeholder="Email" value={form.email} onChange={(e)=> setForm({...form, email: e.target.value})} ></input>
             <input placeholder="Password" value={form.password} onChange={(e)=> setForm({...form, password: e.target.value})}></input>
-            <button type="submit">Iniciar sesión</button>
+            <button className ="btn" type="submit">Iniciar sesión</button>
         </form>
     </>
   ) 

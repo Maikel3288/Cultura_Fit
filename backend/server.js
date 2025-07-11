@@ -17,11 +17,13 @@ await fastify.register(cors, {
   origin: '*',
 });
 
+
 // Rutas
-import helloWorld from './routes/helloWorld.js';
 import userRoutes from './routes/user/user.js'
-fastify.register(helloWorld, { prefix: '/helloWorld'});
-fastify.register(userRoutes, {prefix: '/users'})
+fastify.register(userRoutes, {prefix: '/api/users'})
+import {checkOut} from './routes/checkout.js'
+fastify.register(checkOut, {prefix: '/api/checkout'})
+
 
 
 // Iniciar servidor

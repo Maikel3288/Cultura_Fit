@@ -2,11 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDP57oNA8rkadmiFErvl6es2M4ghQwGRBc",
   authDomain: "cultura-fit-4b24a.firebaseapp.com",
@@ -18,9 +14,9 @@ const firebaseConfig = {
   measurementId: "G-54Y08W8RLJ"
 };
 
-// Initialize Firebase
+// Inicializar Firebase Client
 
-// initializeApp(firebaseConfig) registra/configura tu aplicación de Firebase usando los datos de tu proyecto.
+// initializeApp(firebaseConfig) registra/configura tu aplicación de Firebase usando los datos del proyecto.
 const app = initializeApp(firebaseConfig);
 
 // Firestore es la base de datos NoSQL en tiempo real de Firebase.

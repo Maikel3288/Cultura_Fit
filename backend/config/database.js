@@ -5,7 +5,7 @@ import path from 'path';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
-// Para resolver __dirname en ESModules
+// Resolver __dirname en ESModules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,3 +19,4 @@ admin.initializeApp({
 
 // Obtener instancia de Firestore
 export const db = admin.firestore();
+export default admin;

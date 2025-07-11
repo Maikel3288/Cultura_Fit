@@ -3,7 +3,9 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  getAuth,
+  getIdToken
 } from "firebase/auth";
 import { collection, doc, getDoc, setDoc, where, query, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../config/firebase.js'
@@ -12,13 +14,22 @@ const AuthContext = createContext();
 export const useAuth = () =>  useContext(AuthContext)
 
 
+
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const collectionName = "users"
+    const [token, setToken] = useState()
 
-    const login = (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password)
+    const login = async (email, password) => {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+        const idToken = await getIdToken(userCredential.user)
+        setUser(userCredential.user)
+        setToken(idToken)
+
+        localStorage.setItem("token", idToken);
+
+        return userCredential
     }
 
 
@@ -30,13 +41,11 @@ export const AuthProvider = ({children}) => {
         
         try {
             if (querySnapShot.empty){
-
             
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         
-
-            //doc devuelve la referencia al documento, luego escribimos/ creamos el doc con los datos del usuario
-            await setDoc(doc(db, collectionName, userCredential.user.uid), {
+            //doc devuelve la referencia al documento, luego escribimos/creamos el doc con los datos del usuario
+            const docRef = await setDoc(doc(db, collectionName, userCredential.user.uid), {
                 uid: userCredential.user.uid,
                 email: email,
                 password: password,
@@ -44,6 +53,12 @@ export const AuthProvider = ({children}) => {
                 role: "free",
                 createdAt: new Date()
             })
+            console.log(token)
+            const idToken = await userCredential.user.getIdToken()
+            setUser (userCredential.user)
+            setToken(idToken)
+
+            localStorage.setItem("token", idToken);
 
             return userCredential
             }
@@ -62,9 +77,17 @@ export const AuthProvider = ({children}) => {
     useEffect(()=>{
         // onAuthStateChanged es un observable que emite eventos, el callback se ejecuta cuando hay cambios en el observable
         // Se guarda la función para cancelar la suscripción
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser)=>{
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser)=>{
             setUser(firebaseUser)
             setLoading(false)
+
+            if (!firebaseUser) {
+                setToken(null);
+                return
+            }
+            const idToken = await firebaseUser.getIdToken();
+            setToken(idToken);
+    
         })
 
         //Se llama a la funcion de cancelación
@@ -74,9 +97,10 @@ export const AuthProvider = ({children}) => {
     }, [])
 
     return (
-        <AuthContext.Provider value = {{user, login, logout, register}}>
+        // Se proporciona el contexto a los componentes hijos
+        <AuthContext.Provider value = {{user, login, logout, register, loading}}>
             {!loading && children}
-        </AuthContext.Provider>)
+        </AuthContext.Provider> )
 }
 
  

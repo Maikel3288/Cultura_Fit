@@ -6,7 +6,7 @@ const fastify = Fastify({ logger: true });
 export const userRoutes = async (fastify) => {
 const collectionName = "users"
 
-fastify.put('/', async (req, resp)=>{
+fastify.put('/', async (req, reply)=>{
   try {
     const snapshot = await db.collection(collectionName).get();
     const users = snapshot.docs.map(doc => ({
@@ -14,15 +14,15 @@ fastify.put('/', async (req, resp)=>{
       ...doc.data(),
     }));
 
-    resp.send(users);
+    reply.send(users);
   }
     catch (err) {
         console.error(err);
-        resp.status(404).send({ error: 'Usuario no encontrado' });
+        reply.status(404).send({ error: 'Usuario no encontrado' });
     }
 });
 
-fastify.get('/', async (req, resp)=>{
+fastify.get('/', async (req, reply)=>{
   try {
     const { email, role } = req.query
     const colRef = await db.collection(collectionName)
@@ -38,19 +38,19 @@ fastify.get('/', async (req, resp)=>{
         //.forEach() metodo
     
     if (!querySnapshot.empty) {
-        return resp.send(querySnapshot.docs[0].data());
+        return reply.send(querySnapshot.docs[0].data());
     }
     
-    return resp.status(404).send({message: "Usuario no encontrado"})
+    return reply.status(404).send({message: "Usuario no encontrado"})
 
     }
     catch (err) {
         console.error(err);
-        return resp.status(500).send({ error: "Error al procesar la solicitud" });
+        return reply.status(500).send({ error: "Error al procesar la solicitud" });
     }
 });
 
-fastify.post('/', async(req, resp)=>{
+fastify.post('/register', async(req, reply)=>{
     
     try {
         const { email, displayName, role } = req.body;
@@ -61,7 +61,7 @@ fastify.post('/', async(req, resp)=>{
 
         if (!querySnapshot.empty) {
             const existingDoc = querySnapshot.docs[0]
-            return resp.status(409).send({message: `El usuario con email: ${existingDoc.data().email} ya existe`})
+            return reply.status(409).send({message: `El usuario con email: ${existingDoc.data().email} ya existe`})
             
         }
         
@@ -72,14 +72,15 @@ fastify.post('/', async(req, resp)=>{
             createdAt : new Date(),
         })
         const newUser = await colRef.add(userData)
-        return resp.status(201).send({message: "usuario creado correctamente", idDoc: newUser.id , user: userData})
+        return reply.status(201).send({message: "usuario creado correctamente", idDoc: newUser.id , user: userData})
     }
 
     catch (error) {
         console.error(error);
-    return resp.status(500).send({ error: "Error al procesar la solicitud" });
+    return reply.status(500).send({ error: "Error al procesar la solicitud" });
   }
 })
+
 
 }
 
