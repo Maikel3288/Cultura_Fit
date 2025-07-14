@@ -9,7 +9,7 @@ const Success = () => {
   }
 
   return (
-    <div className="container card">
+    <div className="container-card">
       <h2>¡Gracias por hacerte Premium! 🎉</h2>
       <p>Ahora puedes acceder a todas las funciones exclusivas.</p>
     </div>

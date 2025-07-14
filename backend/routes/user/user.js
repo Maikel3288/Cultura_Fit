@@ -1,34 +1,53 @@
-import Fastify from 'fastify';
 import {db} from '../../config/database.js'
-import { col } from 'sequelize';
-const fastify = Fastify({ logger: true });
+import authenticate from '../../controllers/authenticate.js';
 
 export const userRoutes = async (fastify) => {
 const collectionName = "users"
 
 fastify.put('/', async (req, reply)=>{
   try {
-    const snapshot = await db.collection(collectionName).get();
-    const users = snapshot.docs.map(doc => ({
-      idDoc: doc.id,
-      ...doc.data(),
-    }));
 
-    reply.send(users);
+    const isAuthenticated = await authenticate(req, reply);
+    if (!isAuthenticated) return; 
+
+    const { email} = req.query
+    const updateData = req.body;
+
+    if ('email' in updateData) {
+      return reply.code(400).send({ error: 'El email no puede ser modificado.' });
+    }
+
+    const colRef = db.collection(collectionName)
+    let query = colRef.where('email', '==', email.toLowerCase())
+    const querySnapshot = await query.get()
+
+    if (snapshot.empty) {
+      return reply.code(404).send({ error: 'Usuario no encontrado' });
+    }
+  
+    // Se crea una referencia al documento que se va a actualizar
+    const docRef = colRef.doc(querySnapshot.docs[0].id)
+    docRef.update(updateData)
+
+    return reply.send({ success: true, message: 'Usuario actualizado correctamente.' });
+
   }
     catch (err) {
         console.error(err);
-        reply.status(404).send({ error: 'Usuario no encontrado' });
+        reply.status(500).send({ error: 'Error al actualizar usuario' });
     }
 });
 
 fastify.get('/', async (req, reply)=>{
   try {
-    const { email, role } = req.query
-    const colRef = await db.collection(collectionName)
-    let query = await colRef.where('email', '==', email.toLowerCase())
 
-    if (role){ query = await colRef.where('role', '==', role.toLowerCase())}
+    const isAuthenticated = await authenticate(req, reply);
+
+    if (!isAuthenticated) return; 
+
+    const { email} = req.query
+    const colRef = db.collection(collectionName)
+    let query = colRef.where('email', '==', email.toLowerCase())
    
     const querySnapshot = await query.get()
     // propiedades de un objeto QuerySnapshot
@@ -65,14 +84,17 @@ fastify.post('/register', async(req, reply)=>{
             
         }
         
+        // Se crea una referencia al documento que se va a actualizar
+        const newDocRef = colRef.doc()
         const userData = ({ 
+            uid: newDocRef.id,         
             email: email.toLowerCase(),
             displayName,
             role: role === 'premium' ? 'premium' : 'free',
-            createdAt : new Date(),
-        })
-        const newUser = await colRef.add(userData)
-        return reply.status(201).send({message: "usuario creado correctamente", idDoc: newUser.id , user: userData})
+            createdAt : new Date(),})
+
+        await newDocRef.set((userData))
+        return reply.status(201).send({message: "usuario creado correctamente", idDoc: newDocRef , user: userData})
     }
 
     catch (error) {

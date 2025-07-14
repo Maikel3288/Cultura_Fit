@@ -9,13 +9,16 @@
 
 #root {
   width: 100%;
-  max-width: 500px;
+  max-width: 75%;
   margin: auto;
-  padding: 1rem;
+  padding: 0,5rem;
+  align-content: center;
 }
 
 body, html {
   height: 100%;
+  max-width: 100%;
+  min-width: 540px;
   margin: 0;
   overflow-y: hidden; /* Evita que aparezca scroll vertical */
 }
@@ -35,6 +38,7 @@ body {
   
 }
 
+
 form.login {
   margin-top: 5rem; /* baja el formulario */
   background: white;
@@ -46,10 +50,26 @@ form.login {
 
 /* Contenedor principal */
 .container {
-  max-width: 600px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: 1rem;
+  flex-direction: column;
+  align-items: stretch;
 }
+
+.container-card {
+  display: flex; /* Faltaba esta línea */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;     /* Centra verticalmente */
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  flex-direction: column;
+  flex-wrap: wrap; /* Opcional, si hay múltiples elementos */
+}
+
 
 /* Tarjeta (card) */
 .card {
@@ -72,12 +92,43 @@ h1, h2, h3 {
   color: #1DA1F2;
 }
 
+div h2 {
+  width: 75%;
+  max-width: 500px;
+  align-items: flex-start;
+  margin: auto auto 1rem  ;               
+}
+
+div form.checkout h2{
+  width: 75%;
+  text-align: center;
+  margin: auto auto  ;               
+}
+
 /* Botones */
 .btn {
    /* centrar vertical */
   background-color: #1DA1F2;
   display: flex;
   justify-content: center;
+  align-items: center; 
+  gap: 0.5rem;
+  color: white;
+  margin-top: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.container-card .btn {
+   /* centrar vertical */
+  background-color: #1DA1F2;
+  display: flex;
+  justify-content: center;
+  width: 45%;
   align-items: center; 
   gap: 0.5rem;
   color: white;
@@ -148,7 +199,7 @@ p.register {
 
 .cultura-fit {
   font-weight: bold;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   color: #1DA1F2; /* Azul característico de Twitter */
   text-shadow: 1px 1px 3px rgba(29, 161, 242, 0.5);
   margin: 0.5rem;
@@ -160,25 +211,52 @@ p.register {
 /* Layout principal */
 .home-container {
   display: flex;
+  flex-direction: row;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
   height: 100vh;
+  width: 100%;
+  max-width: 1080px;
+  
+}
+
+menu {
+  background-color: #F5F8FA;
+  display: flex;
+  flex-direction: column; 
+  min-width: 200px;       
+  box-sizing: content-box;
 }
 
 /* Sidebar (barra lateral) */
 .sidebar {
-  width: 220px;
+  width: 177px;
+  min-width: 177px;
   background-color: #ffffff;
+  border-bottom: 1px solid #e6ecf0;
   border-right: 1px solid #e6ecf0;
-  padding: 2rem 1rem;
+  padding: 0.7rem 1rem 1.2rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  flex-shrink: 0; /* Evita que se achique demasiado */
 }
 
 .nav-menu {
-  margin-top: 2rem;
+  margin-top: 0.4rem;
+  margin-left: 0.4rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  background-color: #ffffff;
+  border: 1px 1px solid #e6ecf0;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Evita que se achique demasiado */
+  border: 1px solid #e1e8ed; /* Borde gris muy suave */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra ligera */
 }
 
 .nav-item {
@@ -209,7 +287,7 @@ p.register {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-bottom: 2rem;
+  padding-right: 1rem;
 }
 
 .top-bar .btn {
@@ -223,6 +301,7 @@ form.login {
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box;
   min-width: 320px;
   display: flex;
   flex-direction: column;
@@ -289,11 +368,11 @@ form.login p.register a {
   flex-direction: column;
 }
 
-form.checkout {
-  margin: 5rem auto;
+div form.checkout {
+  margin: auto auto;
   padding: 2rem;
   max-width: 500px;
-  width: 100%;
+  width: 75%;
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -318,4 +397,60 @@ form.checkout input:focus {
   caret-color: auto; /* mantiene el cursor visible */
   color: inherit;
   cursor: text;
+}
+
+/*media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  body, html {
+    overflow-y: auto; /* permitir scroll vertical */
+    padding: 0;
+    height: auto;
+  }
+
+  menu {
+    flex-direction: row;         /* Menú horizontal en pantallas pequeñas */
+    flex-wrap: wrap;             /* Permite que se muevan a la siguiente línea si no caben */
+    justify-content: space-around;
+    min-width: unset;            /* Ya no se necesita el mínimo */
+    width: 100%;
+    padding: 0.5rem 1rem;
+  }
+  
+  .nav-menu {
+    flex-direction: row;         /* Cambia a horizontal */
+    justify-content: space-around;
+    align-items: center;
+    height: auto;
+    width: 100%;                 /* Ocupar todo el ancho */
+    min-width: unset;            /* Ya no necesita mínimo */
+
+
+  }
+
+  .nav-menu > * {
+    flex: 1;                     /* Distribuye los elementos del menú equitativamente */
+    text-align: center;
+  }
+
+  .home-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .main-content {
+    width: 100%;
+  }
+
+
+
+  .cultura-fit {
+    font-size: 1.8rem; /* Tamaño más pequeño para tablets/móviles */
+  }
+  .sidebar{
+    border-bottom: 1px solid #e6ecf0;
+    border-right: none;
+    width: 100%
+  }
+
+
 }

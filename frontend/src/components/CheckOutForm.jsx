@@ -26,7 +26,9 @@ const CheckoutForm = ({ clientSecret }) => {
 
     const result = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
-        card: elements.getElement(CardElement),
+        card: elements.getElement(CardNumberElement),
+        card: elements.getElement(CardExpiryElement),
+        card: elements.getElement(CardCvcElement),
       },
     });
 
@@ -35,7 +37,7 @@ const CheckoutForm = ({ clientSecret }) => {
     } else {
       if (result.paymentIntent.status === 'succeeded') {
         console.log('Pago completado 🎉');
-        navigate('/success')
+        navigate('/checkout/success')
       }
     }
 

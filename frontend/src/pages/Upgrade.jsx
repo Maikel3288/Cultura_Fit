@@ -23,13 +23,15 @@ export const Upgrade = () => {
     useEffect(() => {
     if (!loading && user?.role === "premium") {
       // Si es premium y está en /upgrade, lo mando a /success
-      navigate("/success", { replace: true });
+      navigate('/home', { replace: true });
     }
+
+
   }, [user, loading, navigate]);
 
 
   return (
-    <div className="container card">
+    <div className="container-card">
       <h2 className="cultura-fit">Hazte Premium</h2>
       <p>Accede a entrenamientos exclusivos, métricas avanzadas y más.</p>
 

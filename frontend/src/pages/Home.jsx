@@ -21,6 +21,12 @@ export const Home = () => {
   };
 
   return (
+    <div className="container">
+      {/* Barra superior */}
+      <div className="top-bar">
+          <button className="btn" onClick={handleUpgrade}>Upgrade <MdOutlineWorkspacePremium size={24}/></button>
+          <button className="btn" onClick={handleLogout}>Cerrar sesión</button>
+      </div>
     <div className="home-container">
       {/* Barra lateral */}
       <aside className="sidebar">
@@ -35,16 +41,13 @@ export const Home = () => {
 
       {/* Contenido principal */}
       <main className="main-content">
-        <div className="top-bar">
-          <button className="btn" onClick={handleUpgrade}>Upgrade <MdOutlineWorkspacePremium size={24}/></button>
-          <button className="btn" onClick={handleLogout}>Cerrar sesión</button>
-        </div>
 
         <section>
           <h1>Bienvenido a tu espacio Cultura Fit 💪</h1>
           <p>Selecciona una opción del menú para empezar.</p>
         </section>
       </main>
+    </div>
     </div>
   );
 }
