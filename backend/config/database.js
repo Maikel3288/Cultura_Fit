@@ -9,8 +9,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const serviceAccountPath = path.resolve(__dirname, '..', '..', process.env.FIREBASE_CONFIG);
-const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf-8'));
+let serviceAccount;
+
+if (process.env.USE_SECRET_FILE === 'true') {
+  // Render: usa el archivo secreto montado
+  const serviceAccountPath = '/etc/secrets/firebase-credentials.json';
+  serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf-8'));
+} 
+else {
+  // Local: usa ruta relativa al proyecto
+  const serviceAccountPath = path.resolve(__dirname, '..', '..', process.env.FIREBASE_CONFIG);
+  serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf-8'));
+}
 
 //Inicializa la app con las credenciales del servicio
 admin.initializeApp({

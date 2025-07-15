@@ -54,7 +54,7 @@ export const AuthProvider = ({children}) => {
                 createdAt: new Date()
             })
             console.log(token)
-            const idToken = await userCredential.user.getIdToken()
+            const idToken = await userCredential.user.getIdToken(true)
             setUser (userCredential.user)
             setToken(idToken)
 
@@ -85,7 +85,7 @@ export const AuthProvider = ({children}) => {
                 setToken(null);
                 return
             }
-            const idToken = await firebaseUser.getIdToken();
+            const idToken = await firebaseUser.getIdToken(true);
             setToken(idToken);
     
         })
@@ -98,7 +98,7 @@ export const AuthProvider = ({children}) => {
 
     return (
         // Se proporciona el contexto a los componentes hijos
-        <AuthContext.Provider value = {{user, login, logout, register, loading}}>
+        <AuthContext.Provider value = {{user, token, login, logout, register, loading}}>
             {!loading && children}
         </AuthContext.Provider> )
 }

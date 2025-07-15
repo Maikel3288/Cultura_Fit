@@ -6,19 +6,20 @@ const authenticate = async (req, res) => {
     const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
     if (!token) {
-      res.status(401).send('No token provided');
+      res.status(401).send('Token no proporcionado');
       return false
     }
 
-    // Verificar token con Firebase Admin SDK
+    // Se verifica el token con Firebase Admin SDK
     const decodedToken = await admin.auth().verifyIdToken(token);
+    // Se extrae la información del usuario
     req.user = decodedToken; 
     return true
 
   } 
   catch (error) {
-    console.error('Error verifying token:', error);
-    res.status(401).send('Unauthorized');
+    console.error('Error verificando token:', error);
+    res.status(401).send('No autorizado');
     return false;
   }
 }

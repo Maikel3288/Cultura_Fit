@@ -15,7 +15,7 @@ export default function LoginForm() {
         <form className="login" onSubmit={handleSubmit}>
             <input placeholder="Email" value={form.email} onChange={(e)=> setForm({...form, email: e.target.value})} ></input>
             <input placeholder="Password" value={form.password} onChange={(e)=> setForm({...form, password: e.target.value})}></input>
-            <button className ="btn" type="submit">Iniciar sesión</button>
+            <button className ="btn" style={{ width: '60%' }} type="submit">Iniciar sesión</button>
         </form>
     </>
   ) 

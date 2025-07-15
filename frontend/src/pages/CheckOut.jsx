@@ -24,6 +24,7 @@ const CheckOut = () => {
   const {user} = useAuth()
 
 useEffect (() =>  {
+  if (!user) return;
   const createPaymentIntent = async () => {
     const resdataClientSecret = await fetchClientSecret(user)
     console.log(resdataClientSecret)
