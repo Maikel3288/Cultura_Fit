@@ -8,6 +8,10 @@ import {
     } from '@stripe/react-stripe-js';
 import { useState, useEffect, useStatem } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { syncUserClaims } from '../../controllers/user.js'
+import axios from 'axios'
+import { useAuth } from '../context/AuthProvider.jsx';
+import {updateUserData} from '../../controllers/user';
 
 
 const CheckoutForm = ({ clientSecret }) => {
@@ -16,6 +20,7 @@ const CheckoutForm = ({ clientSecret }) => {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate()
+  const {user, token, claims} = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,9 +42,18 @@ const CheckoutForm = ({ clientSecret }) => {
     } else {
       if (result.paymentIntent.status === 'succeeded') {
         console.log('Pago completado 🎉');
+
+        updateUserData(user, 'premium')
+
+        await syncUserClaims()
+
+        console.log(claims)
+
         navigate('/checkout/success')
       }
     }
+
+  
 
     setIsLoading(false);
   };

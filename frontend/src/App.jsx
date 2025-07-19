@@ -14,12 +14,16 @@ import {CheckoutProvider} from '@stripe/react-stripe-js';
 import CheckOut from './pages/CheckOut.jsx'
 import Return from './components/Return.jsx' 
 import Success from './pages/Success.jsx';
+import WorkOut from './pages/WorkOut.jsx';
+import { ActiveRutineProvider } from './context/ActiveRutineProvider.jsx';
+
 
 function App() {
 
   return (
     <>
     <AuthProvider>
+      <ActiveRutineProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/login"/>}/>
         <Route path="/login" element={<Login/>}/>
@@ -36,6 +40,7 @@ function App() {
 
     
       </Routes>
+      </ActiveRutineProvider>
     </AuthProvider>
     </>
   )

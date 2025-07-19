@@ -15,6 +15,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 // Middleware CORS en Fastify
 await fastify.register(cors, {
   origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
 
@@ -23,6 +24,8 @@ import userRoutes from './routes/user/user.js'
 fastify.register(userRoutes, {prefix: '/api/users'})
 import {checkOut} from './routes/checkout.js'
 fastify.register(checkOut, {prefix: '/api/checkout'})
+import {workouts} from './routes/workouts.js'
+fastify.register(workouts, {prefix: '/api/workouts'})
 
 
 

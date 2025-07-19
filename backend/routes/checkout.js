@@ -28,10 +28,9 @@ const stripe = new Stripe(stripePrivateKey);
 export const checkOut = async (fastify) => {
 
 fastify.post("/create-payment-intent", async (req, reply) => {
+    const auth = await authenticate(req, reply);
 
-  const isAuthenticated = await authenticate(req, reply);
-
-  if (!isAuthenticated) return; 
+    if (!auth) return reply.code(401).send({ message: `Error en la autorización` });
 
     const paymentIntent = await stripe.paymentIntents.create({
         amount: 1000,
@@ -48,26 +47,4 @@ fastify.post("/create-payment-intent", async (req, reply) => {
    
 });
 
-
-// fastify.get("/session-status", async (req, reply) => {
-//     const sessionId = req.query.session_id;
-
-//     if (!sessionId) {
-//         return reply.status(400).send({ error: 'session_id es requerido' });
-//     }
-
-//     try {
-//         const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-//         return reply.send({
-//         status: session.payment_status,
-//         customer_email: session.customer_details?.email || '',
-//         });
-//     } 
-//     catch (error) {
-//         req.log.error(error); // Registro del error en el logger de Fastify
-//         return reply.status(500).send({ error: 'No se pudo recuperar la sesión' });
-//     }
-// });
-// 
 }

@@ -29,4 +29,6 @@ admin.initializeApp({
 
 // Obtener instancia de Firestore
 export const db = admin.firestore();
+export const auth = admin.auth();
+
 export default admin;

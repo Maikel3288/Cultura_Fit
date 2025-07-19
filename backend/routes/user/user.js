@@ -1,7 +1,8 @@
 import { col } from 'sequelize';
-import {db} from '../../config/database.js'
+import {db, auth} from '../../config/database.js'
 import authenticate from '../../controllers/authenticate.js';
-import admin from '../../config/database.js';
+import { act } from 'react';
+
 
 export const userRoutes = async (fastify) => {
 const collectionName = "users"
@@ -9,11 +10,17 @@ const collectionName = "users"
 fastify.put('/', async (req, reply)=>{
   try {
 
-    const isAuthenticated = await authenticate(req, reply);
-    if (!isAuthenticated) return; 
+    const auth = await authenticate(req, reply);
+  
+    if (!auth) return reply.code(401).send({ message: `Error en la autorización` });
 
     const { email} = req.query
     const updateData = req.body;
+    console.log("email:", email, "updateData:", updateData);
+
+    if (!email) {
+      return reply.code(400).send({ error: 'Falta el parámetro email en la query' });
+    }
 
     if ('email' in updateData) {
       return reply.code(400).send({ error: 'El email no puede ser modificado.' });
@@ -23,7 +30,7 @@ fastify.put('/', async (req, reply)=>{
     let query = colRef.where('email', '==', email.toLowerCase())
     const querySnapshot = await query.get()
 
-    if (snapshot.empty) {
+    if (querySnapshot.empty) {
       return reply.code(404).send({ error: 'Usuario no encontrado' });
     }
   
@@ -43,9 +50,9 @@ fastify.put('/', async (req, reply)=>{
 fastify.get('/', async (req, reply)=>{
   try {
 
-    const isAuthenticated = await authenticate(req, reply);
+    const auth = await authenticate(req, reply);
 
-    if (!isAuthenticated) return; 
+    if (!auth) return reply.code(401).send({ message: `Error en la autorización` });
 
     const { email} = req.query
     const colRef = db.collection(collectionName)
@@ -87,7 +94,7 @@ fastify.post('/register', async(req, reply)=>{
         }
 
         // Se crea el usuario en Firebase Authentication
-        const userRecord = await admin.auth().createUser({
+        const userRecord = await auth.createUser({
           email: email.toLowerCase(),
           password,
           displayName,
@@ -99,13 +106,14 @@ fastify.post('/register', async(req, reply)=>{
             uid: newDocRef.id,         
             email: email.toLowerCase(),
             displayName,
+            activeRutineId: '',
             role: role === 'premium' ? 'premium' : 'free',
             createdAt : new Date(),})
 
         await newDocRef.set((userData))
 
         // Se asigna el custom claim "free" al usuario
-        await admin.auth().setCustomUserClaims(userRecord.uid, { role: userData.role });
+        await auth.setCustomUserClaims(userRecord.uid, { role: userData.role});
 
         return reply.status(201).send({message: "usuario creado correctamente", idDoc: newDocRef , user: userData})
     }
@@ -116,14 +124,14 @@ fastify.post('/register', async(req, reply)=>{
   }
 })
 
-fastify.post('/sync-role/:uid', async (req, reply) => {
+fastify.post('/sync-user/:uid', async (req, reply) => {
   const { uid } = req.params;
-
-  const isAuthenticated = await authenticate(req, reply);
-
-  if (!isAuthenticated) return; 
-
+  
   try {
+  const decodedToken = await authenticate(req, reply);
+
+  if (!decodedToken) return reply.code(401).send({ message: `Error en la autorización` });
+
     // Leer rol desde Firestore
     const userDoc = await db.collection(collectionName).doc(uid).get()
     if (!userDoc.exists) {
@@ -132,11 +140,14 @@ fastify.post('/sync-role/:uid', async (req, reply) => {
 
     const userData = userDoc.data();
     const role = userData?.role || 'free';
+    const activeRutine = userData?.activeRutineId || '';
+
 
     // Asignar custom claim
-    await admin.auth().setCustomUserClaims(uid, { role });
+    await auth.setCustomUserClaims(uid, { role: role, activeRutine: activeRutine });
 
-    return reply.send({ message: `Rol "${role}" asignado correctamente como custom claim a ${uid}` });
+    return reply.send({ message: `Claim asignado correctamente al usuario ${uid}` });
+
   } 
   catch (error) {
     console.error('Error asignando rol:', error);

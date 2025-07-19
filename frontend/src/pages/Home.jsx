@@ -1,15 +1,44 @@
-import {Link} from 'react-router-dom';
-import {useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+  getDoc,
+  getDocFromCache,
+  addDoc
+} from 'firebase/firestore';
+import { db, auth } from '../../config/firebase';
 import '../css/App.css';
-import { addUser} from '../routes/firestoreService.js'
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
-import { MdOutlineWorkspacePremium } from "react-icons/md";
+import WorkoutCard from '../components/workouts/WorkOutCard';
+import WorkOutForm from '../components/workouts/WorkOutForm';
+import { useAuth } from '../context/AuthProvider';
+import { addUser } from '../routes/firestoreService.js';
+import { syncUserClaims } from '../../controllers/user.js';
+import { MdOutlineWorkspacePremium } from 'react-icons/md';
+import { useActiveRutine } from '../context/ActiveRutineProvider.jsx';
+import WorkoutCalendar from '../components/workouts/WorkOutCalendar.jsx';
+
+const rutinas = ['torso1', 'pierna1', 'torso2', 'pierna2'];
 
 export const Home = () => {
 
-  const { logout } = useAuth();
+  const { user, claims, logout } = useAuth();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [lastWorkout, setLastWorkout] = useState(null);
+  const [nextRoutine, setNextRoutine] = useState('');
+  const [nextExercises, setNextExercises] = useState([]);
+  const [nextRoutineName, setNextRoutineName] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [exercisesForForm, setExercisesForForm] = useState([]);
+  const {activeRutine } = useActiveRutine();
+  const [view, setView] = useState('home');
 
   const handleLogout = async () => {
     await logout();
@@ -20,11 +49,158 @@ export const Home = () => {
     navigate("/upgrade");
   };
 
+const fetchLastWorkoutAndNext = async () => {
+    try {
+        // Consulta activeRutineId en Users
+        const userCol = collection(db, 'users');
+        const q = query(
+            userCol, 
+            where('email', '==', user.email)
+        );
+        const userSnap = await getDocs(q);
+        const userActiveRutine = userSnap.docs[0].data().activeRutineId;
+
+        // Consulta plantilla rutina activa en Workouts_templates
+        const workoutsTCol = collection(db, 'workouts_templates');
+        const qu = query(
+            workoutsTCol, 
+            where("rutineId", "==", userActiveRutine)
+        );
+        const workoutTemplateSnap = await getDocs(qu);
+            
+        // 1. Se obtiene el último entrenamiento por fecha
+        const userWorkoutsCol = collection(db, 'users', user.uid, 'workouts_completed');
+        const qLastWorkout = query(userWorkoutsCol, 
+            where("rutineId", "==", userActiveRutine),
+            orderBy('createdAt', 'desc'), 
+            limit(1));
+
+        const lastWorkoutSnap = await getDocs(qLastWorkout);
+
+        let lastWorkoutData = null;
+
+        if (!lastWorkoutSnap.empty) {
+            lastWorkoutData = lastWorkoutSnap.docs[0].data();
+        } 
+        else {
+            // Si no hay entrenamientos previos, se muestra la primera sesión con sus valores por defecto
+            const firstWorkoutData = workoutTemplateSnap.docs[0].data();
+            setLastWorkout(firstWorkoutData.sessions[0].exercises);
+            setNextRoutine(firstWorkoutData.sessions[0].id);
+            setNextRoutineName(firstWorkoutData.sessions[0].name);
+            setNextExercises(workoutTemplateSnap.docs[0].data().sessions);
+            return
+
+        }
+
+        // 2. Se calcula la siguiente rutina
+        const sessions = workoutTemplateSnap.docs[0].data().sessions;
+        setNextExercises(sessions)
+
+        const lastWorkoutSessionID = 
+            lastWorkoutData && lastWorkoutData.sessionId
+            ? lastWorkoutData.sessionId
+            : (workoutTemplateSnap.docs[0]?.data()?.sessions?.[0]?.id ?? null);
+
+        const index = sessions.findIndex(session => session.id === lastWorkoutSessionID);
+        const nextIndex = (index + 1) % sessions.length;
+        const nextSessionId = sessions[nextIndex].id;
+        const nextSessionName = sessions[nextIndex].name;
+        setNextRoutine(nextSessionId);
+        setNextRoutineName(nextSessionName);
+        setLastWorkout(lastWorkoutData?.sessions?.[0]?.exercises || []);
+
+
+        // 3. Se obtiene el último entrenamiento de la siguiente rutina
+        const qNextSessionWorkout = query(
+            userWorkoutsCol,
+            where('rutineId', '==', userActiveRutine),
+            where('sessionId', '==', nextSessionId),
+            orderBy('createdAt', 'desc'),
+            limit(1)
+        );
+        const nextSessionSnap = await getDocs(qNextSessionWorkout);
+
+        if (!nextSessionSnap.empty) {
+            const nextWorkoutData = nextSessionSnap.docs[0].data();
+            console.log("Recuperado entrenamiento anterior:", nextWorkoutData);
+            setExercisesForForm(nextWorkoutData.exercises || []);
+        } 
+        else {
+            // Si no hay entrenamientos de la próxima rutina, se muestran los valores por defecto de la plantilla
+            console.log("No se encontró entrenamiento previo para esta sesión. Usando plantilla.");
+            const nextSession = sessions.find(session => session.id === nextSessionId);
+            console.log(nextSession)
+            setExercisesForForm(nextSession ? nextSession.exercises : []);
+
+        }
+          
+    } 
+    catch (error) {
+        console.error('Error al cargar entrenamientos:', error);
+    }
+}
+
+
+
+  useEffect(() => {
+    const runSync = async () => {
+      if (user) {
+        // Se espera a sincronizar los claims del usuario (el role) para mostrar los elementos adecuados
+        await syncUserClaims();
+
+        await fetchLastWorkoutAndNext();
+
+      setLoading(false);
+      }
+    }
+
+    runSync()
+    // Se ejecuta al detectar cambios en el user (login o logout)
+  },[user, activeRutine]);
+
+  const handleStart = () => setShowForm(true);
+
+  const handleFormSubmit = async (workoutData) => {
+    if (!user) {
+      alert('Usuario no autenticado');
+      return;
+    }
+
+    const workoutToSend = {
+      ...workoutData
+    };
+
+    try {
+      // Se añade el entrenamiento a la colección de workout_completed del usuario
+      const userWorkoutsCol = collection(db, 'users', user.uid, 'workouts_completed');
+      await addDoc(userWorkoutsCol, workoutToSend);
+      
+      alert('Entrenamiento guardado');
+      setShowForm(false);
+      setLastWorkout(workoutToSend);
+
+      // Recarga los datos para actualizar el estado (NextRutineName) y rerenderizar correctamente el componente WorkOutCard
+      await fetchLastWorkoutAndNext()
+
+    
+    } 
+    catch (error) {
+      console.error('Error al guardar el entrenamiento:', error);
+      alert('Ocurrió un error al guardar el entrenamiento.');
+    }
+  };
+
+
+  if (loading) return  null 
+
   return (
     <div className="container">
       {/* Barra superior */}
       <div className="top-bar">
+        {claims.role !== "premium" && (
           <button className="btn" onClick={handleUpgrade}>Upgrade <MdOutlineWorkspacePremium size={24}/></button>
+        )}
           <button className="btn" onClick={handleLogout}>Cerrar sesión</button>
       </div>
     <div className="home-container">
@@ -33,9 +209,9 @@ export const Home = () => {
         <h2 className="cultura-fit">Cultura Fit</h2>
 
         <nav className="nav-menu">
-          <a href="#" className="nav-item">Inicio</a>
-          <a href="#" className="nav-item">Calendario</a>
-          <a href="#" className="nav-item">Rendimiento</a>
+          <button className="nav-btn" onClick={() => setView('home')}>Inicio</button>
+          <button className="nav-btn"onClick={() => setView('calendar')}>Calendario</button>
+          <button className="nav-btn" onClick={() => setView('rutines')}>Rutinas</button>
         </nav>
       </aside>
 
@@ -44,9 +220,40 @@ export const Home = () => {
 
         <section>
           <h1>Bienvenido a tu espacio Cultura Fit 💪</h1>
-          <p>Selecciona una opción del menú para empezar.</p>
         </section>
+        
+       {view === 'home'&& 
+        <div style={{ padding: '20px' }}>
+          {!showForm ? (
+            <WorkoutCard nextRoutine={nextRoutineName} onStart={handleStart} />
+          ) : (
+            <WorkOutForm 
+              exercisesPlaceholder={exercisesForForm} 
+              exercisesWorkOutTemplate={nextExercises}
+              sessionId={nextRoutine}
+              nextRoutine={nextRoutineName} 
+              onSubmit={handleFormSubmit} />
+          )}
+        </div>
+       }  
+
+        {view === 'calendar'&& 
+          <div style={{ padding: '20px' }}> 
+          {!showForm ? (
+            <WorkoutCalendar activeRutine={activeRutine} onStart={handleStart}/>
+          ) : (
+            <WorkOutDetail activeRutine={activeRutine} onUpdate={handleFormUpdate}/>
+          )}
+          </div>
+        }
+
+        {/* {view === 'rutines'&& y }  */}
+      
       </main>
+        <aside className="sidebar-right">
+        <h3 style={{marginTop: '20px'}}>Rutina Activa: {activeRutine ? activeRutine.name : ''}</h3>
+
+      </aside>
     </div>
     </div>
   );
@@ -54,3 +261,6 @@ export const Home = () => {
 
 
 export default Home;
+
+
+

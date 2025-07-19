@@ -13,11 +13,12 @@ export default function RegisterForm() {
     try {
       await register(form);
 
-      const {user} = useAuth()
+      const auth = getAuth()
+      const currentUser = auth.currentUser;
 
-      if (!user) return 
+      if (!currentUser) return 
       // Se refresca el token para que tenga el claim con el rol
-      await getIdToken(user); // true fuerza a refrescar token con claims nuevos
+      await currentUser.getIdToken(true); // true fuerza a refrescar token con claims nuevos
       navigate("/home")
 
     } 

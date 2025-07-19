@@ -1,4 +1,7 @@
 /* twitter-style.css */
+/* * {
+  outline: 1px solid red !important;
+} */
 
 /* Reset básico */
 * {
@@ -9,18 +12,24 @@
 
 #root {
   width: 100%;
-  max-width: 75%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   margin: auto;
-  padding: 0.5rem;
+  padding: 0rem;
+  display: flex;
   align-content: center;
+  flex-direction: column;
 }
 
 body, html {
-  height: 100%;
+  height: auto;
   max-width: 100%;
   min-width: 540px;
   margin: 0;
-  overflow-y: hidden; /* Evita que aparezca scroll vertical */
+  overflow-x: hidden;
+  overflow-y: auto;
+  
 }
 
 
@@ -30,10 +39,9 @@ body {
   color: #14171A;
   line-height: 1.5;
   display: flex;
-  justify-content: center;  /* centrar horizontal */
-  align-items: flex-start;   
-  padding-top: 0.5rem;       /* Lo baja un poco desde arriba */
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
+  padding-top: 0;      /* Lo baja un poco desde arriba */
   background-color: #f5f8fa;
   
 }
@@ -50,14 +58,19 @@ form.login {
 
 /* Contenedor principal */
 .container {
-  max-width: 720px;
+  max-width: fit-content;         /* Limita el ancho central como Twitter */
+  width: 100%;
+  height: auto;
   min-width: 520px;
-  margin: 0 auto;
-  padding: 1rem;
+  min-height: 100%;
+  max-height: 100%;
+  margin: 0 auto;            
+  padding: 0 1rem;           /* Padding lateral para separación del borde */
   display: flex;
   flex-direction: column;
-  /* align-items: center;
-  justify-content: center; */
+  align-items: stretch;
+  box-sizing: border-box;
+
 }
 
 .container-card {
@@ -74,13 +87,14 @@ form.login {
 
 /* Tarjeta (card) */
 .card {
-  max-width: 720px;
-  min-width: 520px;
+  max-width: 100%;
+  width: fit-content;
+  min-width: 100%;
   background-color: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1rem auto; /*Espaciado*/
   transition: background-color 0.2s ease-in-out;
   text-align: center;
   display: flex;
@@ -142,6 +156,9 @@ div form.checkout h2{
   font-size: 0.95rem;
   margin-top: 0;
   margin-right: 0;
+  margin-left: auto;
+  position: sticky;
+  
 }
 
 
@@ -175,15 +192,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Centrado vertical para pantallas grandes */
-@media (min-height: 600px) {
-  .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100vh;
-  }
-}
 
 /* Transiciones suaves en inputs y botones */
 input, .btn {
@@ -215,15 +223,15 @@ p.register {
 /* Layout principal */
 .home-container {
   display: flex;
-  flex-direction: row;
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: center;
-  height: 100vh;
+  justify-content: center; /* Centra el conjunto horizontalmente */
+  gap: 1rem;               /* Espacio entre sidebars y contenido */
+  max-width: 100vw;       /* Máximo ancho total */
+  margin: 0 auto 0 auto; /* Centrado horizontal, margen arriba */
   width: 100%;
-  max-width: 1080px;
+  height: auto; /* deja que el contenedor crezca */
+  box-sizing: border-box;
   
+
 }
 
 menu {
@@ -235,17 +243,19 @@ menu {
 }
 
 /* Sidebar (barra lateral) */
-.sidebar {
-  width: 177px;
-  min-width: 177px;
+.sidebar,
+.sidebar-right {
+  flex: 0 0 15%;         /* ancho fijo 15%, no crece ni encoge */
+  min-width: 180px;      /* mínimo ancho para que no sea muy pequeño */
+  max-width: 250px;      /* máximo ancho para no ser muy grande */
   background-color: #ffffff;
-  border-bottom: 1px solid #e6ecf0;
-  border-right: 1px solid #e6ecf0;
+  border-radius: 12px;
   padding: 0.7rem 1rem 1.2rem;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  flex-shrink: 0; /* Evita que se achique demasiado */
+  /* mantiene otras propiedades que ya tengas */
 }
 
 .nav-menu {
@@ -257,10 +267,12 @@ menu {
   border: 1px 1px solid #e6ecf0;
   align-items: flex-start;
   gap: 0.5rem;
+  padding: 0.7rem; 
   flex-shrink: 0; /* Evita que se achique demasiado */
   border: 1px solid #e1e8ed; /* Borde gris muy suave */
   border-radius: 12px; /* Bordes redondeados */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra ligera */
+  flex-wrap: wrap; /* Permite que los elementos se ajusten al tamaño del contenedor */
 }
 
 .nav-item {
@@ -277,23 +289,68 @@ menu {
   color: #1DA1F2;
 }
 
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  text-align: left;
+  color: #0f1419;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-btn:hover {
+  background-color: #f7f9f9;
+}
+
+.nav-btn.active {
+  background-color: #e8f5fe;
+  color: #1da1f2;
+  font-weight: 700;
+}
+
+.nav-btn.logout {
+  color: #e0245e;
+}
+
+.nav-btn.logout:hover {
+  background-color: #ffeef0;
+}
+
 /* Contenido principal */
 .main-content {
-  flex: 1;
+  flex: 1 0 auto;  /* crece para ocupar el espacio disponible,  */
+  width: 600px; 
+  max-width: 100%;    
+  min-width: 480px;   /* no se haga muy pequeño */
+  background-color: #F5F8FA; /* o blanco si prefieres */
+  min-height: calc(100vh - 4rem);
   padding: 2rem;
-  background-color: #F5F8FA;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+
 }
 
 /* Barra superior con botones */
 .top-bar {
   display: flex;
-  justify-content: flex-end;
+  width: 100%;
+  max-width: 100%; 
+  justify-content: space-between;
   align-items: center; 
   gap: 1rem;
   padding-right: 0.5rem;
   padding: 0.3rem;
+  position: sticky;
+
 }
 
 
@@ -371,6 +428,12 @@ form.login p.register a {
   flex-direction: column;
 }
 
+main.main-content div form {
+  max-width: auto;
+  align-items: stretch;
+
+}
+
 div form.checkout {
   margin: auto auto;
   padding: 2rem;
@@ -400,67 +463,134 @@ form.checkout input:focus {
   caret-color: auto; /* mantiene el cursor visible */
   color: inherit;
   cursor: text;
+
+
 }
 
-/*media query para pantallas pequeñas */
-@media (max-width: 768px) {
-  body, html {
-    overflow-y: auto; /* permitir scroll vertical */
+/* Calendario  */
+.react-calendar__tile {
+  position: relative;
+}
+
+.dot {
+  color: #007bff;
+  font-size: 1.2em;
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.react-calendar__tile:hover .dot::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 0.75em;
+  z-index: 100;
+}
+
+
+/*media query para pantallas con resolución de 1000px o menos */
+@media (max-width: 840px) {
+  html, body {
+    overflow-y: auto;
     padding: 0;
     height: auto;
   }
 
   menu {
-    flex-direction: row;         /* Menú horizontal en pantallas pequeñas */
-    flex-wrap: wrap;             /* Permite que se muevan a la siguiente línea si no caben */
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-around;
-    min-width: unset;            /* Ya no se necesita el mínimo */
+    min-width: unset;
     width: 100%;
     padding: 0.5rem 1rem;
+    box-sizing: border-box;
   }
-  
+
   .nav-menu {
-    flex-direction: row;         /* Cambia a horizontal */
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
     height: auto;
-    width: 100%;                 /* Ocupar todo el ancho */
-    min-width: unset;            /* Ya no necesita mínimo */
-
-
+    width: 100%;
+    min-width: unset;
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
   }
 
   .nav-menu > * {
-    flex: 1;                     /* Distribuye los elementos del menú equitativamente */
+    flex: 1;
     text-align: center;
+  }
+
+  .container {
+    flex-direction: column;
+    height: 100%;
+    align-items: stretch;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    
   }
 
   .home-container {
     flex-direction: column;
     height: auto;
-  }
-
-  .main-content {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
+  .main-content,
+  .sidebar,
+  .sidebar-right {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-right: none;
+    border-left: none;
+    position: sticky;
+  }
 
+  .top-bar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+  }
+
+  .card {
+    max-width: 100%;
+    width: 100%;
+    min-width: unset;
+  }
 
   .cultura-fit {
-    font-size: 1.8rem; /* Tamaño más pequeño para tablets/móviles */
+    font-size: 1.8rem;
   }
-  .sidebar{
-    border-bottom: 1px solid #e6ecf0;
-    border-right: none;
-    width: 100%
-  }
-  .card .cultura-fit{
+
+  .card .cultura-fit {
     font-size: 2.3rem;
   }
-  .card{
-    max-width: 720px;
-    min-width: 520px;
-  }
-
-
 }
+
+/* Centrado vertical para pantallas grandes */
+@media (min-height: 600px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+} 

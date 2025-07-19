@@ -13,9 +13,8 @@ export const createWorkout = async (req, res) =>{
         if (!idToken) 
             return res.status(401).json({ message: "No se pudo autenticar el usuario" });
         
-        const newWorkout = await axios.post(`${backendUrl}/workout`, {
-            workout: req.body
-            }, 
+        const newWorkout = await axios.post(`${backendUrl}/workout`, 
+            req.body,
             {
             headers: {
                 Authorization: `Bearer ${idToken}`
@@ -37,10 +36,21 @@ export const createWorkout = async (req, res) =>{
 }
 
 
-
-export const getWorkouts = async (req, res) => {
-
-}
+export const getWorkouts = async (user, rutineId) => {
+    const idToken = await getIdToken(user)
+    const response = await axios.get(`${backendUrl}/api/workouts/${rutineId}`, 
+        {
+            headers: { Authorization: `Bearer ${idToken}` }
+        }, 
+        {
+            params: {
+                rutineId: user.uid
+            }
+        }
+    );
+  
+    return response.data.workouts;
+};
 
 export const deleteWorkout = async (req, res) => {
 

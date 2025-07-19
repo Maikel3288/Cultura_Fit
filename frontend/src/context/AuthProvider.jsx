@@ -1,11 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, use } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
   getAuth,
-  getIdToken
+  getIdToken,
+  getIdTokenResult
 } from "firebase/auth";
 import { collection, doc, getDoc, setDoc, where, query, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../config/firebase.js'
@@ -19,6 +20,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const collectionName = "users"
+    const [claims, setClaims] = useState({})
     const [token, setToken] = useState()
 
     const login = async (email, password) => {
@@ -51,6 +53,7 @@ export const AuthProvider = ({children}) => {
                 password: password,
                 displayName: displayName,
                 role: "free",
+                activeRutineId: '',
                 createdAt: new Date()
             })
             console.log(token)
@@ -76,21 +79,27 @@ export const AuthProvider = ({children}) => {
 
     useEffect(()=>{
         // onAuthStateChanged es un observable que emite eventos, el callback se ejecuta cuando hay cambios en el observable
-        // Se guarda la función para cancelar la suscripción
+        // Se realiza la suscripción al observable (a los cambios)
+        // Se guarda la función que devuelve para en una variable para poder cancelar la suscripción
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser)=>{
             setUser(firebaseUser)
-            setLoading(false)
 
             if (!firebaseUser) {
                 setToken(null);
+                setClaims({})
+                setLoading(false);
                 return
             }
             const idToken = await firebaseUser.getIdToken(true);
             setToken(idToken);
+
+            const idTokenResult = await getIdTokenResult(firebaseUser, true);
+            setClaims(idTokenResult.claims);
     
+            setLoading(false)
         })
 
-        //Se llama a la funcion de cancelación
+        // Se llama a la funcion de cancelación
         return () => {
             unsubscribe()
         }
@@ -98,7 +107,7 @@ export const AuthProvider = ({children}) => {
 
     return (
         // Se proporciona el contexto a los componentes hijos
-        <AuthContext.Provider value = {{user, token, login, logout, register, loading}}>
+        <AuthContext.Provider value = {{user, claims, token, login, logout, register, loading}}>
             {!loading && children}
         </AuthContext.Provider> )
 }
