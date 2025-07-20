@@ -23,6 +23,7 @@ import { syncUserClaims } from '../../controllers/user.js';
 import { MdOutlineWorkspacePremium } from 'react-icons/md';
 import { useActiveRutine } from '../context/ActiveRutineProvider.jsx';
 import WorkoutCalendar from '../components/workouts/WorkOutCalendar.jsx';
+import WorkOutCardDetail from '../components/workouts/WorkOutCardDetail.jsx';
 
 const rutinas = ['torso1', 'pierna1', 'torso2', 'pierna2'];
 
@@ -39,6 +40,7 @@ export const Home = () => {
   const [exercisesForForm, setExercisesForForm] = useState([]);
   const {activeRutine } = useActiveRutine();
   const [view, setView] = useState('home');
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
 
   const handleLogout = async () => {
     await logout();
@@ -159,7 +161,12 @@ const fetchLastWorkoutAndNext = async () => {
     // Se ejecuta al detectar cambios en el user (login o logout)
   },[user, activeRutine]);
 
-  const handleStart = () => setShowForm(true);
+
+  const handleWorkOutDetail = (data) => {
+    setSelectedWorkoutId(data)
+    setShowForm(true);
+  }
+
 
   const handleFormSubmit = async (workoutData) => {
     if (!user) {
@@ -209,9 +216,9 @@ const fetchLastWorkoutAndNext = async () => {
         <h2 className="cultura-fit">Cultura Fit</h2>
 
         <nav className="nav-menu">
-          <button className="nav-btn" onClick={() => setView('home')}>Inicio</button>
-          <button className="nav-btn"onClick={() => setView('calendar')}>Calendario</button>
-          <button className="nav-btn" onClick={() => setView('rutines')}>Rutinas</button>
+          <button className="nav-btn" onClick={() => {setView('home'); setShowForm(false)}}>Inicio</button>
+          <button className="nav-btn"onClick={() => {setView('calendar'); setShowForm(false)}}>Calendario</button>
+          <button className="nav-btn" onClick={() => {setView('rutines'); setShowForm(false)}}>Rutinas</button>
         </nav>
       </aside>
 
@@ -225,14 +232,16 @@ const fetchLastWorkoutAndNext = async () => {
        {view === 'home'&& 
         <div style={{ padding: '20px' }}>
           {!showForm ? (
-            <WorkoutCard nextRoutine={nextRoutineName} onStart={handleStart} />
+            <WorkoutCard nextRoutine={nextRoutineName} onStart={handleWorkOutDetail} />
           ) : (
             <WorkOutForm 
               exercisesPlaceholder={exercisesForForm} 
               exercisesWorkOutTemplate={nextExercises}
               sessionId={nextRoutine}
-              nextRoutine={nextRoutineName} 
-              onSubmit={handleFormSubmit} />
+              sessionName={nextRoutineName} 
+              onSubmit={handleFormSubmit}
+              onCancel={() => setShowForm(false)}
+              />
           )}
         </div>
        }  
@@ -240,9 +249,12 @@ const fetchLastWorkoutAndNext = async () => {
         {view === 'calendar'&& 
           <div style={{ padding: '20px' }}> 
           {!showForm ? (
-            <WorkoutCalendar activeRutine={activeRutine} onStart={handleStart}/>
+            <WorkoutCalendar activeRutine={activeRutine} onStart={handleWorkOutDetail}/>
           ) : (
-            <WorkOutDetail activeRutine={activeRutine} onUpdate={handleFormUpdate}/>
+            <WorkOutCardDetail
+              workoutId={selectedWorkoutId} 
+              onCancel={() => setShowForm(false)}
+            />
           )}
           </div>
         }
@@ -257,9 +269,9 @@ const fetchLastWorkoutAndNext = async () => {
     </div>
     </div>
   );
+
+
 }
-
-
 export default Home;
 
 

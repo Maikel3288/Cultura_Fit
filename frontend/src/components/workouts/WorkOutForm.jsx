@@ -5,15 +5,17 @@ import { syncUserClaims } from '../../../controllers/user'
 const WorkOutForm = ({
   exercisesPlaceholder = [],
   nextRoutine,
+  sessionName,
   exercisesWorkOutTemplate,
   sessionId,
-  onSubmit
+  onSubmit,
+  onCancel
 }) => {
   const [exercises, setExercises] = useState([]);
   const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState('');
-
   const {activeRutine} = useActiveRutine()
+
 
   useEffect(() => {
     const hasPlaceholderData = Array.isArray(exercisesPlaceholder) && exercisesPlaceholder.length > 0;
@@ -88,14 +90,16 @@ const WorkOutForm = ({
       durationMin: Number(duration),
       rutineId: activeRutine,
       sessionId: sessionId,
+      sessionName: sessionName,
       createdAt: new Date()
     });
 
   };
 
+
   return (
     <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-      <h3>Entrenamiento: {nextRoutine}</h3>
+      <h3>Entrenamiento: {sessionName}</h3>
 
       {exercises.map((exercise, exIndex) => {
         // Se filtra por la sessionId activa en workout_templates
@@ -175,10 +179,17 @@ const WorkOutForm = ({
         />
       </label>
 
-      <br />
-      <button type="submit" className='btn' style={{ marginTop: '10px' }}>
-        Guardar Entrenamiento
-      </button>
+      <br/>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+        <button type="submit" className='btn' style={{ marginTop: '10px' }}>
+          Guardar Entrenamiento
+        </button>
+        <button type="button" className='btn' onClick={onCancel} style={{ marginTop: '10px' }}>
+          Cancelar
+        </button>
+      </div>
+
+
     </form>
   );
 };

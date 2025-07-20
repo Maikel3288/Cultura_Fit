@@ -547,7 +547,7 @@ form.checkout input:focus {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    /*overflow: hidden;*/
   }
 
   .main-content,
@@ -594,3 +594,109 @@ form.checkout input:focus {
     justify-content: center;
   }
 } 
+
+/* Estilo general del calendario */
+.react-calendar {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 1rem;
+  margin: 1rem auto;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+/* Encabezado del mes */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #1DA1F2;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #e8f5fd;
+}
+
+/* Días de la semana */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #657786;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Celdas del calendario */
+.react-calendar__tile {
+  max-width: 100%;
+  padding: 0.75rem 0;
+  background: none;
+  border: none;
+  text-align: center;
+  line-height: 1.2;
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #e8f5fd;
+  cursor: pointer;
+}
+
+/* Día activo (seleccionado) */
+.react-calendar__tile--active {
+  background-color: #1DA1F2;
+  color: white;
+  border-radius: 8px;
+}
+
+/* Dot para marcar días con entrenamientos */
+.dot {
+  color: #1DA1F2;
+  font-size: 1.2em;
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* Tooltip al pasar el mouse sobre el dot */
+.react-calendar__tile:hover .dot::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  z-index: 100;
+  white-space: normal; /*Permite que el contenido del tooltip se muestre en varias líneas si es necesario*/
+  max-width: auto; /* o el ancho máximo para el tooltip */
+  word-wrap: break-word;
+}
