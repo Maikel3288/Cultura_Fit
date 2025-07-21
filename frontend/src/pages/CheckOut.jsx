@@ -22,16 +22,17 @@ const CheckOut = () => {
   const location = useLocation()
   const [clientSecret, setClientSecret] = useState()
   const {user} = useAuth()
+  const [role, setRole] = useState('free')
 
-useEffect (() =>  {
-  if (!user) return;
-  const createPaymentIntent = async () => {
-    const resdataClientSecret = await fetchClientSecret(user)
-    console.log(resdataClientSecret)
-    setClientSecret(resdataClientSecret)
-    }
-    createPaymentIntent();
-}, [])
+  useEffect (() =>  {
+    if (!user) return;
+    const createPaymentIntent = async () => {
+      const resdataClientSecret = await fetchClientSecret(user)
+      console.log(resdataClientSecret)
+      setClientSecret(resdataClientSecret)
+      }
+      createPaymentIntent();
+  }, [])
 
   const options = {
     clientSecret,
@@ -40,19 +41,25 @@ useEffect (() =>  {
 
     console.log(clientSecret)
 
+    const updateLocalRole = () => {
+      setRole("premium"); //  Actualiza localmente
+  };
+
     //Se montan los métodos de pago
 
   return (
     <div>
-      <h2>Checkout</h2>
       {clientSecret ? (
         // Elements es un proveedor de contexto. Pasa el contexto y da acceso a Stripe al componente hijo
         // Permite configurar el pago con confirmCardPayment y usar los hooks useStripe y useElements
-        <Elements stripe={stripePromise} options={options}>
-          <CheckoutForm clientSecret={clientSecret}/>
-        </Elements>
+        <>
+          <h2>Checkout</h2>
+          <Elements stripe={stripePromise} options={options}>
+            <CheckoutForm clientSecret={clientSecret} updateLocalRole = {updateLocalRole}/>
+          </Elements>
+        </>
       ) : (
-        <div>Cargando...</div>
+        <div style={{alignItems: 'center', display: 'flex', justifyContent: 'center'}}>Cargando...</div>
       )}
     </div>
   );

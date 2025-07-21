@@ -61,6 +61,7 @@ export const syncUserClaims = async () => {
   const newToken = await user.getIdToken();
   localStorage.setItem("token", newToken);
 
-  const idTokenResult = await getIdTokenResult(user, true);
-  console.log(idTokenResult);
+  const decodedToken = await getIdTokenResult(user, true);
+
+  return decodedToken
 };

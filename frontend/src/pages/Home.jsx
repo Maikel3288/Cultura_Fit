@@ -28,7 +28,7 @@ import RutineList from '../components/rutines/RutineList.jsx';
 
 export const Home = () => {
 
-  const { user, claims, logout } = useAuth();
+  const { user, claims, logout, role } = useAuth();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [lastWorkout, setLastWorkout] = useState(null);
@@ -159,6 +159,8 @@ const fetchLastWorkoutAndNext = async () => {
 
 
   useEffect(() => {
+    console.log("useEffect triggered", { user, claims, activeRutine });
+    console.log("role", role)
     const runSync = async () => {
       if (user) {
         // Se espera a sincronizar los claims del usuario (el role) para mostrar los elementos adecuados
@@ -172,7 +174,7 @@ const fetchLastWorkoutAndNext = async () => {
 
     runSync()
     // Se ejecuta al detectar cambios en el user (login o logout)
-  },[user, activeRutine]);
+  },[user, activeRutine, claims, role]);
 
 
   const handleWorkOutDetail = (data) => {
@@ -218,7 +220,7 @@ const fetchLastWorkoutAndNext = async () => {
     <div className="container">
       {/* Barra superior */}
       <div className="top-bar">
-        {claims.role !== "premium" && (
+        {role !== "premium" && (
           <button className="btn" onClick={handleUpgrade}>Upgrade <MdOutlineWorkspacePremium size={24}/></button>
         )}
           <button className="btn" onClick={handleLogout}>Cerrar sesión</button>
@@ -233,6 +235,9 @@ const fetchLastWorkoutAndNext = async () => {
           <button className="nav-btn"onClick={() => {setView('calendar'); setShowForm(false)}}>Calendario</button>
           <button className="nav-btn" onClick={() => {setView('rutines'); setShowForm(false)}}>Rutinas</button>
         </nav>
+
+        <p className="active-title">Rutina Activa:</p>
+        <p className="active-routine"> {activeRutineName ? activeRutineName : ''}</p>
       </aside>
 
       {/* Contenido principal */}
@@ -279,10 +284,6 @@ const fetchLastWorkoutAndNext = async () => {
         }
       
       </main>
-        <aside className="sidebar-right">
-        <h3 style={{marginTop: '20px'}}>Rutina Activa: {activeRutineName ? activeRutineName : ''}</h3>
-
-      </aside>
     </div>
     </div>
   );

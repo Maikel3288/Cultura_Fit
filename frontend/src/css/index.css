@@ -45,8 +45,10 @@ body {
   background-color: #f5f8fa;
   
 }
+ /*nuevas */
 
 
+/*antiguas*/
 form.login {
   margin-top: 5rem; /* baja el formulario */
   background: white;
@@ -61,7 +63,7 @@ form.login {
   max-width: fit-content;         /* Limita el ancho central como Twitter */
   width: 100%;
   height: auto;
-  min-width: 520px;
+  /*min-width: 520px; antes */
   min-height: 100%;
   max-height: 100%;
   margin: 0 auto;            
@@ -107,6 +109,7 @@ form.login {
 .card:hover {
   background-color: #f0f8ff;
 }
+
 
 /* Títulos */
 h1, h2, h3 {
@@ -216,6 +219,18 @@ p.register {
   color: #1DA1F2; /* Azul característico de Twitter */
   text-shadow: 1px 1px 3px rgba(29, 161, 242, 0.5);
   margin: 0.5rem;
+  cursor: default;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.upgrade {
+  font-weight: bold;
+  font-size: 2.3rem;
+  color: #1DA1F2; /* Azul característico de Twitter */
+  text-shadow: 1px 1px 3px rgba(29, 161, 242, 0.5);
+  margin: 0.5rem;
+  justify-content: center;
   cursor: default;
   user-select: none;
   transition: color 0.3s ease;
@@ -603,6 +618,12 @@ form.checkout input:focus {
   }
 } 
 
+@media (max-width: 540px) {
+  .container {
+    min-width: unset;
+  }
+}
+
 /* Estilo general del calendario */
 .react-calendar {
   width: 100%;
@@ -812,3 +833,28 @@ div.rutine-list {
   padding: 4px 8px;
   border-radius: 12px;
 }
+
+.active-title {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #010101; /* negro */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  letter-spacing: 0.03em;
+  user-select: none;
+  padding-left: 12px;
+}
+
+.active-routine {
+  margin-top: 0px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-style: italic;
+  color: #0a5953; /* verde */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  letter-spacing: 0.03em;
+  user-select: none;
+  padding-left: 12px;
+}
+
+

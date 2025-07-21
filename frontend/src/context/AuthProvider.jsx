@@ -8,8 +8,9 @@ import {
   getIdToken,
   getIdTokenResult
 } from "firebase/auth";
-import { collection, doc, getDoc, setDoc, where, query, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, where, query, getDocs, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '../../config/firebase.js'
+
 
 const AuthContext = createContext();
 export const useAuth = () =>  useContext(AuthContext)
@@ -22,6 +23,7 @@ export const AuthProvider = ({children}) => {
     const collectionName = "users"
     const [claims, setClaims] = useState({})
     const [token, setToken] = useState()
+    const [role, setRole] = useState(user?.role || 'free');
 
     const login = async (email, password) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
@@ -77,6 +79,10 @@ export const AuthProvider = ({children}) => {
         signOut(auth)
     }
 
+    const updateLocalRole = (newRole) => {
+        setRole(newRole);
+    };
+
     useEffect(()=>{
         // onAuthStateChanged es un observable que emite eventos, el callback se ejecuta cuando hay cambios en el observable
         // Se realiza la suscripción al observable (a los cambios)
@@ -99,15 +105,27 @@ export const AuthProvider = ({children}) => {
             setLoading(false)
         })
 
+        if (!user) return;
+
+        const userDocRef = doc(db, 'users', user.uid);
+        const unsubscribeRole = onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+            const data = docSnap.data();
+            setRole(data.role || 'free');
+            }
+        });
+
+
         // Se llama a la funcion de cancelación
         return () => {
             unsubscribe()
+            unsubscribeRole()
         }
-    }, [])
+    }, [user, role])
 
     return (
         // Se proporciona el contexto a los componentes hijos
-        <AuthContext.Provider value = {{user, claims, token, login, logout, register, loading}}>
+        <AuthContext.Provider value = {{user, claims, token, login, logout, register, loading, updateLocalRole, role}}>
             {!loading && children}
         </AuthContext.Provider> )
 }

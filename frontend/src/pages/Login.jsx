@@ -30,7 +30,7 @@ const Login = () => {
           <div className="error">{error}</div>
         )}
 
-        <form onSubmit={handleSubmit} className="form.login">
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             id="email"

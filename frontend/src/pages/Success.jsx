@@ -3,7 +3,7 @@ import { useLocation, Navigate } from "react-router-dom";
 const Success = () => {
   const location = useLocation();
 
-  // Si no viene desde el flujo de pago, redirige
+  // Si no viene desde el flujo de pago, redirige a Home
   if (!location.state?.justPaid) {
     return <Navigate to="/home" />;
   }

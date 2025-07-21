@@ -12,9 +12,11 @@ import { syncUserClaims } from '../../controllers/user.js'
 import axios from 'axios'
 import { useAuth } from '../context/AuthProvider.jsx';
 import {updateUserData} from '../../controllers/user';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase.js';
 
 
-const CheckoutForm = ({ clientSecret }) => {
+const CheckoutForm = ({ clientSecret, updateLocalRole }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState(null);
@@ -22,11 +24,11 @@ const CheckoutForm = ({ clientSecret }) => {
   const navigate = useNavigate()
   const {user, token, claims} = useAuth()
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
-
     setIsLoading(true);
 
     const result = await stripe.confirmCardPayment(clientSecret, {
@@ -42,10 +44,17 @@ const CheckoutForm = ({ clientSecret }) => {
     } else {
       if (result.paymentIntent.status === 'succeeded') {
         console.log('Pago completado 🎉');
+        
 
-        updateUserData(user, 'premium')
+        const userRef = doc(db, 'users', user.uid);
+        await updateDoc(userRef, { role: "premium" });
 
         await syncUserClaims()
+
+        //updateLocalRole()// Esto fuerza una actualización local del estado
+
+        //updateUserData(user, 'premium')
+
 
         console.log(claims)
 

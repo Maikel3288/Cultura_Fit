@@ -32,7 +32,7 @@ export const Upgrade = () => {
 
   return (
     <div className="container-card">
-      <h2 className="cultura-fit">Hazte Premium</h2>
+      <h3 className="upgrade">Hazte Premium</h3>
       <p>Accede a entrenamientos exclusivos, métricas avanzadas y más.</p>
 
       <ul style={{ listStyle: 'none'}}>
@@ -41,7 +41,7 @@ export const Upgrade = () => {
         <li>✔️ Soporte prioritario</li>
       </ul>
 
-        <button className="btn" onClick={handleUpgrade} disabled={loading}>
+        <button className="btn" style={{marginTop: '20px', width: '70%'}} onClick={handleUpgrade} disabled={loading}>
         {loading ? "Redirigiendo..." : "Actualizar a Premium"} 
       </button>
 

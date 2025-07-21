@@ -41,7 +41,7 @@ const RutineCard = ({ rutine, userRole }) => {
       onClick={handleClick}
       className={`rutine-card 
         ${!isAccessible ? 'locked' : ''} 
-        ${isAccessible && activeRutine ? 'active' : ''}`}
+        ${isAccessible && activeRutine === rutine.rutineId ? 'active' : ''}`}
     >
       {isPremium && (
         <div className="premium-badge">Premium</div>
