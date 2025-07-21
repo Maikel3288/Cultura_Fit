@@ -82,7 +82,7 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
         exercises: formData
       });
       alert('Entrenamiento actualizado');
-      onCancel(); // o puedes hacer refetch si prefieres
+      onCancel();
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
       alert('Error al guardar los cambios.');

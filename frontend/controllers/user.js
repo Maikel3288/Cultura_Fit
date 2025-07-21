@@ -43,8 +43,7 @@ export const syncUserClaims = async () => {
   const idToken = await getIdToken(user)
 
   if (!user) return;
-
-  // Se llama al backend
+  // Se llama al backend para sincronizar de nuevo el usuario y sus claims
     await axios.post(`${backendUrl}/api/users/sync-user/${user.uid}`, 
         {},
         {

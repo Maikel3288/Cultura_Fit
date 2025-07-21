@@ -8,6 +8,7 @@ const rutinas = [
     type: "fullbody",
     level: "iniciate",
     days: "3",
+    membership : "free",
     sessions: [
       {
         name: "Día 1 - FullBody A",
@@ -47,6 +48,7 @@ const rutinas = [
     type: "torso_leg",
     level: "iniciate",
     days: "4",
+    membership : "premium",
     sessions: [
       {
         name: "Torso 1",
@@ -96,6 +98,7 @@ const rutinas = [
     type: "torso_legs_arm",
     level: "intermidiate",
     days: "5",
+    membership : "premium",
     sessions: [
       {
         name: "Torso A",

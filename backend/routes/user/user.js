@@ -14,7 +14,7 @@ fastify.put('/', async (req, reply)=>{
   
     if (!auth) return reply.code(401).send({ message: `Error en la autorización` });
 
-    const { email} = req.query
+    const { email } = req.query
     const updateData = req.body;
     console.log("email:", email, "updateData:", updateData);
 

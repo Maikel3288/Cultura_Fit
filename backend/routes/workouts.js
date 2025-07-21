@@ -52,20 +52,37 @@ fastify.get('/', async (req, reply) => {
 
         if (!auth) return reply.code(401).send({ message: `Error en la autorización` });
 
-        const user = auth
-        const collectionName = 'workouts_completed'
         const collectionRoot = 'users'
+        const collectionName = 'workouts_completed'
 
-        const workoutsSnap = await db
+        const queryRef = db
             .collection(collectionRoot)
             .doc(req.user.uid)
             .collection(collectionName)
+
+        const {rutineId} = req.query
+        let workoutsSnapshot
+
+        if (rutineId) {
+        // Consulta con filtro por rutineId
+            workoutsSnapshot = await queryRef.where('rutineId', '==', rutineId)
             .orderBy('createdAt', 'desc')
-            .limit(10)
+            .limit(12)
             .get()
 
+        }
+
+        else {
+        // Consulta normal sin filtro
+            workoutsSnapshot = await queryRef
+            .orderBy('createdAt', 'desc')
+            .limit(12)
+            .get();
+        }
+            
+
         const workouts = []
-        workoutsSnap.forEach(doc => workouts.push({ id: doc.id, ...doc.data() }))
+        workoutsSnapshot.forEach(doc => workouts.push({ id: doc.id, ...doc.data() }))
 
         reply.send({ workouts })
         } 
@@ -76,7 +93,7 @@ fastify.get('/', async (req, reply) => {
         }
   });
 
-fastify.get('/:rutineId', async (req, reply) => {
+fastify.get('/:workoutId', async (req, reply) => {
     try {
        const auth = await authenticate(req, reply)
 
@@ -85,14 +102,14 @@ fastify.get('/:rutineId', async (req, reply) => {
         const userId = auth.uid
         const collectionName = 'workouts_completed'
         const collectionRoot = 'users'
-        const { rutineId } = req.params;
+        const { workoutId } = req.params;
 
         const docRef = await db
-        .collection(collectionRoot)
-        .doc(userId)
-        .collection(collectionName)
-        .doc(rutineId)
-        .get();
+            .collection(collectionRoot)
+            .doc(userId)
+            .collection(collectionName)
+            .doc(workoutId)
+            .get();
 
         if (!docRef.exists) {
             return reply.code(404).send({ error: 'Entrenamiento no encontrado' });

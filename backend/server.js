@@ -26,6 +26,8 @@ import {checkOut} from './routes/checkout.js'
 fastify.register(checkOut, {prefix: '/api/checkout'})
 import {workouts} from './routes/workouts.js'
 fastify.register(workouts, {prefix: '/api/workouts'})
+import {rutines} from './routes/rutines.js'
+fastify.register(rutines, {prefix: '/api/rutines'})
 
 
 

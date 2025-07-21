@@ -24,8 +24,7 @@ import { MdOutlineWorkspacePremium } from 'react-icons/md';
 import { useActiveRutine } from '../context/ActiveRutineProvider.jsx';
 import WorkoutCalendar from '../components/workouts/WorkOutCalendar.jsx';
 import WorkOutCardDetail from '../components/workouts/WorkOutCardDetail.jsx';
-
-const rutinas = ['torso1', 'pierna1', 'torso2', 'pierna2'];
+import RutineList from '../components/rutines/RutineList.jsx';
 
 export const Home = () => {
 
@@ -38,7 +37,7 @@ export const Home = () => {
   const [nextRoutineName, setNextRoutineName] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [exercisesForForm, setExercisesForForm] = useState([]);
-  const {activeRutine } = useActiveRutine();
+  const {activeRutine, activeRutineName } = useActiveRutine();
   const [view, setView] = useState('home');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
 
@@ -57,10 +56,17 @@ const fetchLastWorkoutAndNext = async () => {
         const userCol = collection(db, 'users');
         const q = query(
             userCol, 
-            where('email', '==', user.email)
+            where('email', '==', user.email.toLowerCase())
         );
         const userSnap = await getDocs(q);
+        console.log("userSnap", userSnap)
+
         const userActiveRutine = userSnap.docs[0].data().activeRutineId;
+        
+        if (!userActiveRutine) {
+            console.warn("El usuario no tiene una rutina activa.");
+        return;
+        }
 
         // Consulta plantilla rutina activa en Workouts_templates
         const workoutsTCol = collection(db, 'workouts_templates');
@@ -86,7 +92,14 @@ const fetchLastWorkoutAndNext = async () => {
         } 
         else {
             // Si no hay entrenamientos previos, se muestra la primera sesión con sus valores por defecto
+            
+            if (!workoutTemplateSnap) {
+                console.warn("No sessions found in the first workout template.");
+                return;
+            }
+
             const firstWorkoutData = workoutTemplateSnap.docs[0].data();
+
             setLastWorkout(firstWorkoutData.sessions[0].exercises);
             setNextRoutine(firstWorkoutData.sessions[0].id);
             setNextRoutineName(firstWorkoutData.sessions[0].name);
@@ -259,11 +272,15 @@ const fetchLastWorkoutAndNext = async () => {
           </div>
         }
 
-        {/* {view === 'rutines'&& y }  */}
+        {view === 'rutines'&& 
+          <div style={{ padding: '20px' }}>
+            <RutineList />
+          </div>
+        }
       
       </main>
         <aside className="sidebar-right">
-        <h3 style={{marginTop: '20px'}}>Rutina Activa: {activeRutine ? activeRutine.name : ''}</h3>
+        <h3 style={{marginTop: '20px'}}>Rutina Activa: {activeRutineName ? activeRutineName : ''}</h3>
 
       </aside>
     </div>

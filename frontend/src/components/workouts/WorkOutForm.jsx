@@ -83,7 +83,6 @@ const WorkOutForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('activeRutine:', activeRutine);
     onSubmit({
       exercises: exercises,
       notes,

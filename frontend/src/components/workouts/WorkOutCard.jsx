@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 const WorkoutCard = ({ nextRoutine, onStart }) => {
 
   useEffect(() => {
-
+    console.log('nextRoutine:', nextRoutine);
   }, [nextRoutine]);
 
   return (
