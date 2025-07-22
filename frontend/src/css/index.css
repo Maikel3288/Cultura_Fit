@@ -919,3 +919,18 @@ div.rutine-list {
     transform: translateX(6px) scale(1.2);
   }
 }
+
+button.password-recovery {
+  margin-top: 10px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #14171A;
+  background: none; 
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.8rem; 
+}
+
+button.password-recovery:hover {
+  text-decoration: underline;
+}

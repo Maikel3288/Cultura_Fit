@@ -270,7 +270,7 @@ const fetchLastWorkoutAndNext = async () => {
           <button className={`nav-btn ${!activeRutine ? "active-routine-nav-menu" : ""}`}
             onClick={() => {setView('rutines'); setShowForm(false)}}>Rutinas</button>
           {!activeRutine && (
-            <span className="bouncing-arrow"><FaArrowLeftLong style={{ marginTop: '5px', marginLeft: '3px', color: 'orange'}} size={21}/></span>
+            <span className="bouncing-arrow"><FaArrowLeftLong style={{ marginTop: '6px', marginLeft: '3px', color: 'orange'}} size={21}/></span>
           )}
           
           </div>

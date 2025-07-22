@@ -43,7 +43,7 @@ const RutineCard = ({ rutine, userRole }) => {
         ${!isAccessible ? 'locked' : ''} 
         ${isAccessible && activeRutine === rutine.rutineId ? 'active' : ''}`}
     >
-      {isPremium && (
+      {(isPremium && userRole === 'free') && (
         <div className="premium-badge">Premium</div>
       )}
 

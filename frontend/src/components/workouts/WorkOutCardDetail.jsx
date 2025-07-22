@@ -11,6 +11,18 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
   const [defaultExerciceData, setDefaultExerciceData] = useState([]);
   const [workoutTemplate, setWorkoutTemplate] = useState('')
   const [sessionTemplate, setSessionTemplate] = useState('')
+  const [notes, setNotes] = useState('');
+  const [durationMin, setDurationMin] = useState('');
+
+   // Se obtiene la fecha de hoy
+  const getToday = () => {
+    const date = new Date().toLocaleDateString('sv-SE'); // "yyyy-mm-dd"
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`; // "dd-mm-yyyy"
+  };
+
+  const [fecha, setFecha] = useState(getToday());
+  const [fechaError, setFechaError] = useState(false);
 
   // Carga el entrenamiento y guarda en formData los datos para editar
   useEffect(() => {
@@ -25,6 +37,9 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
             const {sessionId, rutineId} = data
             
             setWorkout({ id: snapShot.id, ...data });
+            setNotes(data.notes || '');
+            setDurationMin(data.durationMin || '');
+            setFecha(data.regDate || getToday());
 
             // Se muestran los datos para editar
             const editableExercises = data.exercises.map((exercise) => ({
@@ -71,7 +86,7 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
     fetchWorkout();
   }, [user, workoutId]);
 
-  // Manejar los cambios de los inputs del formulario (se hace una copia profunda del array)
+  // Manejar los cambios en los inputs de un ejercicio (se hace una copia profunda del array)
   const handleInputChange = (exerciseIndex, setIndex, field, value) => {
     const updatedData = [...formData];
     updatedData[exerciseIndex].sets[setIndex][field] = value;
@@ -81,18 +96,42 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
   // Guardar los cambios
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+
+
+  try {
+    //const workoutToday = await workout(fecha);
+    //console.log("workoutToday", workoutToday)
+    const calendarDate = workout.regDate === fecha ? fecha : '';
+
+    console.log("calendarDate", calendarDate)
+
+    // console.log("fecha", fecha)
+    // console.log("Date", calendarDate)
+    // console.log("fechaError", fechaError)
+    if (calendarDate) {
+      setFechaError(true)
+      // alert("Ya has registrado un entrenamiento en esa fecha.")
+      // console.log("Ya has registrado un entrenamiento en esa fecha.");
+      return;
+    }
+
       const docRef = doc(db, 'users', user.uid, 'workouts_completed', workoutId);
       await updateDoc(docRef, {
-        exercises: formData
+        exercises: formData,
+        notes,
+        durationMin,
+        regDate: fecha
       });
       alert('Entrenamiento actualizado');
       onCancel();
-    } catch (error) {
+      setFechaError(false)
+      
+      } 
+      catch (error) {
       console.error("Error al guardar los cambios:", error);
       alert('Error al guardar los cambios.');
     }
-  };
+  }
 
   if (loading) return <p>Cargando entrenamiento...</p>;
   if (!workout) return <p>Entrenamiento no encontrado.</p>;
@@ -106,7 +145,7 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
         <span style={{color: '#0a5953'}}>{`"${sessionTemplate.name}" del ${dateReversed}`}</span>
         </h3>
       
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{padding: '20px', border: '1px solid #e1e8ed'}} >
         {formData.map((exercise, index) => (
         
           <div key={index} style={{ marginBottom: '20px' }}>
@@ -114,7 +153,7 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
 
             {exercise.sets?.map((set, setIndex) => (
               <div key={setIndex} style={{ marginBottom: '10px' }}>
-                <label>Serie {setIndex + 1}</label>
+                <label style={{fontWeight: 'bold'}}>Serie {setIndex + 1}</label>
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', marginTop: '5px' }}>
                   <label style={{ flex: 1 }}>{`Reps (${defaultExerciceData[index].reps})`}</label>
                   <label style={{ flex: 1 }}>{`RPE (${defaultExerciceData[index].rpe})`}</label>
@@ -144,6 +183,36 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
             ))}
           </div>
         ))}
+        <label>
+          Notas:
+            <input
+              type="text"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              style={{ width: '100%', marginBottom: '10px' }}
+            />
+        </label>
+
+        <label>
+          Duración (minutos):
+          <input
+            type="number"
+            value={durationMin}
+            onChange={(e) => setDurationMin(e.target.value)}
+            />
+        </label>
+
+        <label>
+          Fecha del entrenamiento:
+          <input
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            className={fechaError ? 'fecha-error' : 'fecha'}
+          />
+          {fechaError && (<span className="message-error">Ya has registrado un entrenamiento en esa fecha.</span>)}
+              
+        </label>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
           <button type="submit" className="btn">Guardar Cambios</button>
