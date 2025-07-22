@@ -294,7 +294,7 @@ const fetchLastWorkoutAndNext = async () => {
         </section>
         
        {view === 'home'&& 
-        <div style={{ paddingTop: '20px' }}>
+        <div style={{ padding: '6px 20px'}}>
           {!showForm ? (
             <WorkoutCard nextRoutine={nextRoutineName} onStart={handleWorkOutDetail} />
           ) : (
@@ -312,7 +312,7 @@ const fetchLastWorkoutAndNext = async () => {
        }  
 
         {view === 'calendar'&& 
-          <div style={{ padding: '20px' }}> 
+          <div style={{ padding: '6px 20px'}}> 
           {!showForm ? (
             <WorkoutCalendar activeRutine={activeRutine} onStart={handleWorkOutDetail}/>
           ) : (
