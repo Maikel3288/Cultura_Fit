@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useActiveRutine } from '../../context/ActiveRutineProvider';
 import { syncUserClaims } from '../../../controllers/user'
+import Calendar from 'react-calendar';
 
 const WorkOutForm = ({
   exercisesPlaceholder = [],
@@ -9,7 +10,8 @@ const WorkOutForm = ({
   exercisesWorkOutTemplate,
   sessionId,
   onSubmit,
-  onCancel
+  onCancel,
+  existingWorkouts
 }) => {
   const [exercises, setExercises] = useState([]);
   const [notes, setNotes] = useState('');
@@ -62,42 +64,82 @@ const WorkOutForm = ({
   }, [exercisesPlaceholder, exercisesWorkOutTemplate, sessionId]);
 
 
- const handleInputChange = (exerciseIndex, setIndex, field, value) => {
-  setExercises((prevExercises) => {
-    const updatedExercises = [...prevExercises];
+  const handleInputChange = (exerciseIndex, setIndex, field, value) => {
+    setExercises((prevExercises) => {
+      const updatedExercises = [...prevExercises];
 
-    // Cada vez que se actualiza un campo, se crea una copia profunda del ejercicio y sus series
-    const updatedExercise = { ...updatedExercises[exerciseIndex] };
-    const updatedSets = [...updatedExercise.sets];
-    const updatedSet = { ...updatedSets[setIndex] };
+      // Cada vez que se actualiza un campo, se crea una copia profunda del ejercicio y sus series
+      const updatedExercise = { ...updatedExercises[exerciseIndex] };
+      const updatedSets = [...updatedExercise.sets];
+      const updatedSet = { ...updatedSets[setIndex] };
 
-    updatedSet[field] = value;
-    updatedSets[setIndex] = updatedSet;
-    updatedExercise.sets = updatedSets;
-    updatedExercises[exerciseIndex] = updatedExercise;
+      updatedSet[field] = value;
+      updatedSets[setIndex] = updatedSet;
+      updatedExercise.sets = updatedSets;
+      updatedExercises[exerciseIndex] = updatedExercise;
 
-    return updatedExercises;
-  });
-};
+      return updatedExercises;
+    });
+  };
+
+  // Se obtiene la fecha de hoy
+  const getToday = () => {
+    return new Date().toLocaleDateString('sv-SE'); // "YYYY-MM-DD"
+    // const [year, month, day] = today.split('-');
+    // return `${day}-${month}-${year}`; // "DD-MM-YYYY"
+  };
+
+const [fecha, setFecha] = useState(getToday());
+const [fechaError, setFechaError] = useState(false);
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleOnSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const workoutToday = await existingWorkouts(fecha);
+    //console.log("workoutToday", workoutToday)
+    const calendarDate = workoutToday?.some((w) =>
+      w.regDate === fecha
+    );
+
+    console.log("fecha", fecha)
+    console.log("Date", calendarDate)
+    console.log("fechaError", fechaError)
+    if (calendarDate) {
+      setFechaError(true)
+      alert("Ya has registrado un entrenamiento en esa fecha.")
+      console.log("Ya has registrado un entrenamiento en esa fecha.");
+      return;
+    }
+
+    setFechaError(false)
+
+    // Enviar datos al padre
     onSubmit({
-      exercises: exercises,
+      exercises,
       notes,
       durationMin: Number(duration),
       rutineId: activeRutine,
-      sessionId: sessionId,
-      sessionName: sessionName,
-      createdAt: new Date()
+      sessionId,
+      sessionName,
+      createdAt: new Date(),
+      regDate: fecha
     });
 
-  };
+    alert('Datos enviados correctamente al padre');
+  } 
+  catch (error) {
+    console.error('Error al guardar el entrenamiento:', error);
+    alert('Ocurrió un error al guardar el entrenamiento.');
+  }
+};
+
+
 
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+    <form onSubmit={handleOnSubmit} style={{ marginTop: '20px' }}>
       <h3>Entrenamiento: {sessionName}</h3>
 
       {exercises.map((exercise, exIndex) => {
@@ -174,8 +216,19 @@ const WorkOutForm = ({
           type="number"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
-          required
         />
+      </label>
+
+      <label>
+        Fecha del entrenamiento:
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          className={fechaError ? 'fecha-error' : 'fecha'}
+        />
+          {fechaError && (<span className="message-error">Ya has registrado un entrenamiento en esa fecha.</span>)}
+        
       </label>
 
       <br/>

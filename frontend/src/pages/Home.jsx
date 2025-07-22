@@ -25,6 +25,7 @@ import { useActiveRutine } from '../context/ActiveRutineProvider.jsx';
 import WorkoutCalendar from '../components/workouts/WorkOutCalendar.jsx';
 import WorkOutCardDetail from '../components/workouts/WorkOutCardDetail.jsx';
 import RutineList from '../components/rutines/RutineList.jsx';
+import {fetchUserLastWorkout } from '../../controllers/date.js'
 
 export const Home = () => {
 
@@ -174,45 +175,75 @@ const fetchLastWorkoutAndNext = async () => {
 
     runSync()
     // Se ejecuta al detectar cambios en el user (login o logout)
-  },[user, activeRutine, claims, role]);
+  },[user, activeRutine, role]);
 
 
   const handleWorkOutDetail = (data) => {
     setSelectedWorkoutId(data)
     setShowForm(true);
   }
+  
 
+  // const handleFormSubmit = async (workoutData) => {
+  //   if (!user) {
+  //     alert('Usuario no autenticado');
+  //     return;
+  //   }
+
+  //   const workoutToSend = {
+  //     ...workoutData
+  //   };
+
+  //   try {
+
+  //     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  //     // Comprueba si ya existe un entrenamiento hoy
+  //     const workoutToday = await existingWorkouts()
+  //     const alreadyWorkoutToday = workoutToday?.some((w) =>
+  //       w.createdAt?.toDate?.().toISOString?.().startsWith(today)
+  //     );
+
+  //     if (alreadyWorkoutToday) {
+  //       alert("Ya has registrado un entrenamiento hoy.");
+  //       return;
+  //     }
+  //     // Se añade el entrenamiento a la colección de workout_completed del usuario
+  //     const userWorkoutsCol = collection(db, 'users', user.uid, 'workouts_completed');
+  //     await addDoc(userWorkoutsCol, workoutToSend);
+  //     alert('Entrenamiento guardado');
+
+      
+
+  //     setShowForm(false);
+  //     setLastWorkout(workoutToSend);
+
+  //     // Recarga los datos para actualizar el estado (NextRutineName) y rerenderizar correctamente el componente WorkOutCard
+  //     await fetchLastWorkoutAndNext()
+
+    
+  //   } 
+  //   catch (error) {
+  //     console.error('Error al guardar el entrenamiento:', error);
+  //     alert('Ocurrió un error al guardar el entrenamiento.');
+  //   }
+  // };
 
   const handleFormSubmit = async (workoutData) => {
-    if (!user) {
-      alert('Usuario no autenticado');
-      return;
-    }
-
-    const workoutToSend = {
-      ...workoutData
-    };
-
-    try {
       // Se añade el entrenamiento a la colección de workout_completed del usuario
       const userWorkoutsCol = collection(db, 'users', user.uid, 'workouts_completed');
-      await addDoc(userWorkoutsCol, workoutToSend);
-      
+      await addDoc(userWorkoutsCol, workoutData);
       alert('Entrenamiento guardado');
+
+      
+
       setShowForm(false);
-      setLastWorkout(workoutToSend);
+      setLastWorkout(workoutData);
 
       // Recarga los datos para actualizar el estado (NextRutineName) y rerenderizar correctamente el componente WorkOutCard
       await fetchLastWorkoutAndNext()
-
-    
-    } 
-    catch (error) {
-      console.error('Error al guardar el entrenamiento:', error);
-      alert('Ocurrió un error al guardar el entrenamiento.');
-    }
-  };
-
+  }
+ 
 
   if (loading) return  null 
 
@@ -259,6 +290,7 @@ const fetchLastWorkoutAndNext = async () => {
               sessionName={nextRoutineName} 
               onSubmit={handleFormSubmit}
               onCancel={() => setShowForm(false)}
+              existingWorkouts={fetchUserLastWorkout}
               />
           )}
         </div>

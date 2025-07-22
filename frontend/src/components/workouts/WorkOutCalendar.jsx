@@ -27,7 +27,7 @@ const WorkoutCalendar = ({activeRutine, onStart}) => {
       setWorkouts(data);
 
       // Se obtienen las fechas de los entrenamientos para mostrar puntos en el calendario
-      const workoutDates = data.map(workout => new Date(workout.createdAt.seconds * 1000).toDateString());
+      const workoutDates = data.map(workout => workout.regDate);
       setDatesWithWorkouts(workoutDates);
 
     };
@@ -37,8 +37,8 @@ const WorkoutCalendar = ({activeRutine, onStart}) => {
 
   const handleClick = (value, event) => {
     const selected = workouts.find(workout => {
-      const workoutDate = workout.createdAt.toDate().toDateString();
-      return workoutDate === value.toDateString();
+      const workoutDate = workout.regDate
+      return workoutDate === value.toLocaleDateString('sv-SE');
     });
 
     if (selected) {
@@ -50,15 +50,19 @@ const WorkoutCalendar = ({activeRutine, onStart}) => {
   // Se muestra un punto en el calendario para cada entrenamiento completado
   const tileContent = ({ date, view }) => {
     if (view === 'month') {
-      const match = workouts.find(workout => {
-        const workoutDate = workout.createdAt.toDate().toDateString();
-        return workoutDate === date.toDateString();
+      const matches = workouts.filter(workout => {
+        return workout.regDate === date.toLocaleDateString('sv-SE')
       });
 
-      if (match) {
+      
+      if (matches.length > 0) {
         return (
-          <div className="dot" title={match.sessionId || 'Entrenamiento'}>
-            ●
+          <div className="dots-container" title={`${matches.length} entrenamientos`}>
+            {matches.map((m, i) => (
+              <span key={i} className="dot" title={m.sessionId || 'Entrenamiento'}>
+                ●
+              </span>
+            ))}
           </div>
         );
       }

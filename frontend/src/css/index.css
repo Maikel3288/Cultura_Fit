@@ -858,3 +858,23 @@ div.rutine-list {
 }
 
 
+.fecha {
+  margin-bottom: 10px;
+  width: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.fecha-error {
+  margin-bottom: 10px;
+  width: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  border-color: red;
+  border-width: 1px;
+}
+
+.message-error {
+  color: #d93025; /* rojo accesible */
+  font-size: 1rem;
+  margin-top: 5px;
+  font-weight: 500;
+}
