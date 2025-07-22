@@ -140,8 +140,8 @@ const handleOnSubmit = async (e) => {
 
 
   return (
-    <form onSubmit={handleOnSubmit} style={{ marginTop: '20px' }}>
-      <h3>Entrenamiento: {sessionName}</h3>
+    <form onSubmit={handleOnSubmit}>
+      <h3 style={{marginBottom: '20px', color: '#0a5953'}}>Entrenamiento: {sessionName}</h3>
 
       {exercises.map((exercise, exIndex) => {
         // Se filtra por la sessionId activa en workout_templates

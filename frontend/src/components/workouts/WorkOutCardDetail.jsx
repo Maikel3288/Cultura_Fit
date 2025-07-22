@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { doc, getDoc, getDocs, updateDoc, collection, query, where } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 import { useAuth } from '../../context/AuthProvider';
@@ -9,6 +9,8 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
   const [formData, setFormData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [defaultExerciceData, setDefaultExerciceData] = useState([]);
+  const [workoutTemplate, setWorkoutTemplate] = useState('')
+  const [sessionTemplate, setSessionTemplate] = useState('')
 
   // Carga el entrenamiento y guarda en formData los datos para editar
   useEffect(() => {
@@ -49,8 +51,10 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
             if (!querySnapshot.empty) {
                 const docData = querySnapshot.docs[0].data();
                 const sessions = docData.sessions || [];
+                setWorkoutTemplate(docData)
 
                 const sessionDefaultData = sessions.find(session => session.id === sessionId);
+                setSessionTemplate(sessionDefaultData)
                 
                 const defExData = sessionDefaultData ? sessionDefaultData.exercises : [];
                 
@@ -60,6 +64,7 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
         }
 
       setLoading(false);
+    
     
     };
 
@@ -92,9 +97,14 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
   if (loading) return <p>Cargando entrenamiento...</p>;
   if (!workout) return <p>Entrenamiento no encontrado.</p>;
 
+  const dateReversed = workout.regDate.split('-').reverse().join('-');
+
   return (
     <div className="workout-detail">
-      <h1>Editar entrenamiento del {new Date(workout.createdAt.seconds * 1000).toLocaleDateString()}</h1>
+      <h3 style={{marginBottom: '20px'}}>
+        <span style={{color: '#0a5953'}}>{`${workoutTemplate.name}: `}</span>
+        <span style={{color: '#0a5953'}}>{`"${sessionTemplate.name}" del ${dateReversed}`}</span>
+        </h3>
       
       <form onSubmit={handleSubmit}>
         {formData.map((exercise, index) => (

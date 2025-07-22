@@ -287,7 +287,9 @@ const fetchLastWorkoutAndNext = async () => {
       <main className="main-content">
 
         <section>
+          {!showForm ? (
           <h1>Bienvenido a tu espacio Cultura Fit 💪</h1>
+          ): ''}
           {!activeRutine && <h3 style={{ color: 'orange', paddingTop: '29px' }} >Seleccione una rutina como activa</h3>}
         </section>
         

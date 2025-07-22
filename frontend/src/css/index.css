@@ -564,6 +564,7 @@ form.checkout input:focus {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    gap: 0rem;
     /*overflow: hidden;*/
   }
 
