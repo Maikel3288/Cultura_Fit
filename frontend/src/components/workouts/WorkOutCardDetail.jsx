@@ -119,15 +119,15 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
                   />
                   <input
                     type="number"
-                    placeholder="Kgs"
-                    value={set.weight}
-                    onChange={(e) => handleInputChange(index, setIndex, 'weight', e.target.value)}
-                  />
-                  <input
-                    type="number"
                     placeholder="RPE"
                     value={set.rpe}
                     onChange={(e) => handleInputChange(index, setIndex, 'rpe', e.target.value)}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Kgs"
+                    value={set.weight}
+                    onChange={(e) => handleInputChange(index, setIndex, 'weight', e.target.value)}
                   />
                 </div>
               </div>

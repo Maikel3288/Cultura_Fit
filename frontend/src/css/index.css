@@ -834,6 +834,19 @@ div.rutine-list {
   border-radius: 12px;
 }
 
+/* Etiqueta de seleccionar rutina */
+.unactive-rutine-badge { 
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background-color: orange;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
 .active-title {
   margin-top: 20px;
   font-size: 1.1rem;
@@ -857,6 +870,19 @@ div.rutine-list {
   padding-left: 12px;
 }
 
+.nav-btn.active-routine-nav-menu {
+  margin-top: 0px;
+  font-size: 1rem;
+  color: #0f1419; /* sin comillas */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.03em;
+  user-select: none;
+  /* 🔸 Recuadro naranja */
+  border: 2px solid orange;
+  border-radius: 4px; /* opcional: esquinas redondeadas */
+  padding: 8px 12px;  /* espacio interno opcional para que se vea mejor */
+  background-color: transparent; /* o blanco, si querés */
+}
 
 .fecha {
   margin-bottom: 10px;
@@ -877,4 +903,18 @@ div.rutine-list {
   font-size: 1rem;
   margin-top: 5px;
   font-weight: 500;
+}
+
+.bouncing-arrow {
+  animation: bounce 1.5s infinite;
+  color: orange;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(6px) scale(1.2);
+  }
 }

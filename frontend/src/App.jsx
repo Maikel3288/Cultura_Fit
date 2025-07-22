@@ -14,7 +14,6 @@ import {CheckoutProvider} from '@stripe/react-stripe-js';
 import CheckOut from './pages/CheckOut.jsx'
 import Return from './components/Return.jsx' 
 import Success from './pages/Success.jsx';
-import WorkOut from './pages/WorkOut.jsx';
 import { ActiveRutineProvider } from './context/ActiveRutineProvider.jsx';
 
 

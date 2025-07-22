@@ -20,11 +20,12 @@ const WorkOutForm = ({
 
 
   useEffect(() => {
-    const hasPlaceholderData = Array.isArray(exercisesPlaceholder) && exercisesPlaceholder.length > 0;
+    // console.log("ExercisesPlaceholder", exercisesPlaceholder)
 
-    if (hasPlaceholderData) {
-      // Caso 1: ya hay datos guardados de entrenamientos previos, mostrar esos datos
-      const formatted = exercisesPlaceholder.map(ex => {
+    if (Array.isArray(exercisesPlaceholder.exercises)) {
+      // Si existen entrenamientos previos guardados con la sesión actual, se muestra la ultima sesión
+
+      const formatted = exercisesPlaceholder.exercises.map(ex => {
         const setsArray = Array.isArray(ex.sets)
           ? ex.sets.map(set => ({
               reps: set.reps || '',
@@ -41,7 +42,7 @@ const WorkOutForm = ({
 
       setExercises(formatted);
     } else {
-      // Caso 2: no hay entrenamientos previos, usar workout_template de la sesión actual
+      // Si no hay entrenamientos previos, usar workout_template de la sesión
       const currentSession = exercisesWorkOutTemplate.find(session => session.id === sessionId);
 
       if (currentSession?.exercises?.length) {
@@ -103,13 +104,13 @@ const handleOnSubmit = async (e) => {
       w.regDate === fecha
     );
 
-    console.log("fecha", fecha)
-    console.log("Date", calendarDate)
-    console.log("fechaError", fechaError)
+    // console.log("fecha", fecha)
+    // console.log("Date", calendarDate)
+    // console.log("fechaError", fechaError)
     if (calendarDate) {
       setFechaError(true)
-      alert("Ya has registrado un entrenamiento en esa fecha.")
-      console.log("Ya has registrado un entrenamiento en esa fecha.");
+      // alert("Ya has registrado un entrenamiento en esa fecha.")
+      // console.log("Ya has registrado un entrenamiento en esa fecha.");
       return;
     }
 
@@ -127,7 +128,7 @@ const handleOnSubmit = async (e) => {
       regDate: fecha
     });
 
-    alert('Datos enviados correctamente al padre');
+    //alert('Datos enviados correctamente al padre');
   } 
   catch (error) {
     console.error('Error al guardar el entrenamiento:', error);

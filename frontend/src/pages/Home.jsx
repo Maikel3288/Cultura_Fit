@@ -26,6 +26,8 @@ import WorkoutCalendar from '../components/workouts/WorkOutCalendar.jsx';
 import WorkOutCardDetail from '../components/workouts/WorkOutCardDetail.jsx';
 import RutineList from '../components/rutines/RutineList.jsx';
 import {fetchUserLastWorkout } from '../../controllers/date.js'
+import { FiArrowDown, FiArrowDownLeft, FiArrowLeftCircle, FiArrowRight, FiArrowUpLeft } from "react-icons/fi";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 export const Home = () => {
 
@@ -38,7 +40,7 @@ export const Home = () => {
   const [nextRoutineName, setNextRoutineName] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [exercisesForForm, setExercisesForForm] = useState([]);
-  const {activeRutine, activeRutineName } = useActiveRutine();
+  const {activeRutine, activeRutineName } = useActiveRutine('');
   const [view, setView] = useState('home');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
 
@@ -140,7 +142,7 @@ const fetchLastWorkoutAndNext = async () => {
         if (!nextSessionSnap.empty) {
             const nextWorkoutData = nextSessionSnap.docs[0].data();
             console.log("Recuperado entrenamiento anterior:", nextWorkoutData);
-            setExercisesForForm(nextWorkoutData.exercises || []);
+            setExercisesForForm(nextWorkoutData || []);
         } 
         else {
             // Si no hay entrenamientos de la próxima rutina, se muestran los valores por defecto de la plantilla
@@ -233,7 +235,7 @@ const fetchLastWorkoutAndNext = async () => {
       // Se añade el entrenamiento a la colección de workout_completed del usuario
       const userWorkoutsCol = collection(db, 'users', user.uid, 'workouts_completed');
       await addDoc(userWorkoutsCol, workoutData);
-      alert('Entrenamiento guardado');
+      //alert('Entrenamiento guardado');
 
       
 
@@ -264,8 +266,18 @@ const fetchLastWorkoutAndNext = async () => {
         <nav className="nav-menu">
           <button className="nav-btn" onClick={() => {setView('home'); setShowForm(false)}}>Inicio</button>
           <button className="nav-btn"onClick={() => {setView('calendar'); setShowForm(false)}}>Calendario</button>
-          <button className="nav-btn" onClick={() => {setView('rutines'); setShowForm(false)}}>Rutinas</button>
+          <div style={{display: 'inline-flex', alignItems: "center"} }>
+          <button className={`nav-btn ${!activeRutine ? "active-routine-nav-menu" : ""}`}
+            onClick={() => {setView('rutines'); setShowForm(false)}}>Rutinas</button>
+          {!activeRutine && (
+            <span className="bouncing-arrow"><FaArrowLeftLong style={{ marginTop: '5px', marginLeft: '3px', color: 'orange'}} size={21}/></span>
+          )}
+          
+          </div>
+          
         </nav>
+
+
 
         <p className="active-title">Rutina Activa:</p>
         <p className="active-routine"> {activeRutineName ? activeRutineName : ''}</p>
@@ -276,10 +288,11 @@ const fetchLastWorkoutAndNext = async () => {
 
         <section>
           <h1>Bienvenido a tu espacio Cultura Fit 💪</h1>
+          {!activeRutine && <h3 style={{ color: 'orange', paddingTop: '29px' }} >Seleccione una rutina como activa</h3>}
         </section>
         
        {view === 'home'&& 
-        <div style={{ padding: '20px' }}>
+        <div style={{ paddingTop: '20px' }}>
           {!showForm ? (
             <WorkoutCard nextRoutine={nextRoutineName} onStart={handleWorkOutDetail} />
           ) : (
