@@ -99,22 +99,6 @@ const WorkOutCardDetail = ({ workoutId, onCancel }) => {
 
 
   try {
-    //const workoutToday = await workout(fecha);
-    //console.log("workoutToday", workoutToday)
-    const calendarDate = workout.regDate === fecha ? fecha : '';
-
-    console.log("calendarDate", calendarDate)
-
-    // console.log("fecha", fecha)
-    // console.log("Date", calendarDate)
-    // console.log("fechaError", fechaError)
-    if (calendarDate) {
-      setFechaError(true)
-      // alert("Ya has registrado un entrenamiento en esa fecha.")
-      // console.log("Ya has registrado un entrenamiento en esa fecha.");
-      return;
-    }
-
       const docRef = doc(db, 'users', user.uid, 'workouts_completed', workoutId);
       await updateDoc(docRef, {
         exercises: formData,
