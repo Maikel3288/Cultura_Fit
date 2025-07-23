@@ -42,13 +42,12 @@ export const AuthProvider = ({children}) => {
         const q = query(colRef, where('email', '==', email.toLowerCase()))
         const querySnapShot = await getDocs(q)
 
-        
         try {
             if (querySnapShot.empty){
             
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
             
-            //doc devuelve la referencia al documento, luego escribimos/creamos el doc con los datos del usuario
+            // docRef devuelve la referencia al documento, luego se crea el doc con los datos del usuario
             const docRef = await setDoc(doc(db, collectionName, userCredential.user.uid), {
                 uid: userCredential.user.uid,
                 email: email,
@@ -106,7 +105,6 @@ export const AuthProvider = ({children}) => {
         })
 
         if (!user) return;
-
         const userDocRef = doc(db, 'users', user.uid);
         const unsubscribeRole = onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -114,7 +112,6 @@ export const AuthProvider = ({children}) => {
             setRole(data.role || 'free');
             }
         });
-
 
         // Se llama a la funcion de cancelación
         return () => {
