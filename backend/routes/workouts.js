@@ -16,9 +16,9 @@ fastify.post('/', async (req, reply) =>{
 
         if (req.body === undefined) return reply.status(400).send({ error: 'Faltan campos por cumplimentar' })
 
-        const { rutineId, session, exercices, notes, durationMin } = req.body
+        const { rutineId, sessionId, exercises, notes, durationMin, regDate } = req.body
 
-        if (!rutineId || !session || !exercices) 
+        if (!rutineId || !sessionId || !exercises) 
             return reply.status(400).send({ error: 'Faltan campos por cumplimentar' })
         
         const colRef = db.collection(collectionRoot).doc(user.uid).collection(collectionName)
@@ -26,10 +26,11 @@ fastify.post('/', async (req, reply) =>{
     
         const newWorkout = {
         rutineId,
-        session,
-        exercices,
+        sessionId,
+        exercises,
         notes,
         durationMin,
+        regDate,
         createdAt: new Date()
         }
 
@@ -126,6 +127,70 @@ fastify.get('/:workoutId', async (req, reply) => {
         return reply.code(500).send({ error: 'Error interno del servidor' })
     }
 });
+
+fastify.patch('/:workoutId', async (req, reply) => {
+    try {
+        const auth = await authenticate(req, reply);
+        if (!auth) return reply.code(401).send({ message: 'Error en la autorización' });
+
+        const userId = auth.uid;
+        const { workoutId } = req.params;
+        const {
+            exercices,
+            notes,
+            durationMin,
+            regDate
+        } = req.body;
+
+        // Validar que regDate esté definido
+        if (regDate === undefined) {
+        return reply.status(400).send({ error: 'El campo regDate (yyyy-mm-dd) es oblitaroio' });
+        }
+
+
+        const collectionRoot = 'users';
+        const collectionName = 'workouts_completed';
+        const docRef = db.collection(collectionRoot).doc(userId).collection(collectionName).doc(workoutId);
+
+        const docSnap = await docRef.get();
+        if (!docSnap.exists) {
+            return reply.code(404).send({ error: 'Entrenamiento no encontrado' });
+        }
+
+        const existingWorkout = docSnap.data();
+
+        // Se valida si regDate cambió
+        if (existingWorkout.regDate !== regDate) {
+            // Buscar si ya existe otro entrenamiento con esa regDate
+            const colRef = db.collection(collectionRoot).doc(userId).collection(collectionName);
+            const sameDateSnap = await colRef.where('regDate', '==', regDate).get();
+
+            if (!sameDateSnap.empty) {
+                return reply.code(409).send({ error: 'Ya existe un entrenamiento registrado en esa fecha' });
+            }
+        }
+
+        // Preparar la data actualizada
+        const updatedWorkout = {
+            updatedAt: new Date()
+        };
+
+        if (exercices !== undefined) updatedWorkout.exercices = exercices;
+        if (notes !== undefined) updatedWorkout.notes = notes;
+        if (durationMin !== undefined) updatedWorkout.durationMin = durationMin;
+        if (regDate !== undefined) updatedWorkout.regDate = regDate;
+
+        await docRef.update(updatedWorkout);
+        return reply.send({ message: 'Entrenamiento actualizado correctamente', workout: updatedWorkout });
+
+    } catch (err) {
+        console.error('Error actualizando entrenamiento:', err);
+        console.error('Mensaje:', err.message);
+        console.error(err.stack);
+        reply.status(500).send({ error: 'Error interno del servidor' });
+    }
+});
+
 
 
 }
