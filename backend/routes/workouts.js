@@ -60,12 +60,14 @@ fastify.get('/', async (req, reply) => {
             .doc(req.user.uid)
             .collection(collectionName)
 
-        const {rutineId} = req.query
+        const {rutineId, sessionId} = req.query
         let workoutsSnapshot
 
         if (rutineId) {
         // Consulta con filtro por rutineId
-            workoutsSnapshot = await queryRef.where('rutineId', '==', rutineId)
+            workoutsSnapshot = await queryRef
+            .where('rutineId', '==', rutineId)
+            .where('sessionId', '==', sessionId)
             .orderBy('createdAt', 'desc')
             .limit(12)
             .get()

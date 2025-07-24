@@ -26,6 +26,10 @@ fastify.put('/', async (req, reply)=>{
       return reply.code(400).send({ error: 'El email no puede ser modificado.' });
     }
 
+    if ('role' in updateData) {
+      return reply.code(400).send({ error: 'El rol no puede ser modificado.' });
+    }
+
     const colRef = db.collection(collectionName)
     let query = colRef.where('email', '==', email.toLowerCase())
     const querySnapshot = await query.get()
