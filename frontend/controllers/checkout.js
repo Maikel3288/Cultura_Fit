@@ -3,9 +3,8 @@ import axios from 'axios'
 import { getIdToken } from 'firebase/auth';
 import { useAuth } from '../src/context/AuthProvider';
 
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-export const stripePromise = loadStripe("pk_test_51RVbJnFLiEmdxnPslJ3Yhs2tmNsi1azDOXkPzMTfE0W5O5Tn7gJJO8qNRsGh8mxdRZOlyi3Di3xlkkE498p2Okti00AbaQ5EXT");
+// Carga la clave pública de Stripe
+export const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 

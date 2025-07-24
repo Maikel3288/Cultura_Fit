@@ -32,7 +32,7 @@ export const Upgrade = () => {
 
   return (
     <div className="container-card">
-      <h3 className="upgrade">Hazte Premium</h3>
+      <h3 className="upgrade">Hazte Premium por 10€</h3>
       <p>Accede a entrenamientos exclusivos, métricas avanzadas y más.</p>
 
       <ul style={{ listStyle: 'none'}}>

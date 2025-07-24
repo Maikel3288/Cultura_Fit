@@ -15,7 +15,7 @@ import { appearance } from "../../controllers/checkout";
 import {fetchClientSecret} from "../../controllers/checkout"
 
 
-// Carga tu clave pública de Stripe
+// Carga la clave pública de Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const CheckOut = () => {
@@ -41,9 +41,9 @@ const CheckOut = () => {
 
     console.log(clientSecret)
 
-    const updateLocalRole = () => {
-      setRole("premium"); //  Actualiza localmente
-  };
+  //   const updateLocalRole = () => {
+  //     setRole("premium"); //  Actualiza localmente
+  // };
 
     //Se montan los métodos de pago
 
@@ -55,7 +55,7 @@ const CheckOut = () => {
         <>
           <h2>Checkout</h2>
           <Elements stripe={stripePromise} options={options}>
-            <CheckoutForm clientSecret={clientSecret} updateLocalRole = {updateLocalRole}/>
+            <CheckoutForm clientSecret={clientSecret} />
           </Elements>
         </>
       ) : (

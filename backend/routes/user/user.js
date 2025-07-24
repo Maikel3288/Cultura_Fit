@@ -78,10 +78,10 @@ fastify.get('/', async (req, reply)=>{
     }
 });
 
-fastify.post('/register', async(req, reply)=>{
+fastify.post('/', async(req, reply)=>{
     
     try {
-        const { email, displayName, role } = req.body;
+        const { email, displayName, role, password } = req.body;
         const colRef = db.collection(collectionName)
 
         const query = colRef.where('email', '==', email.toLowerCase())
