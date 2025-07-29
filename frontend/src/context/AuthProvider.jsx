@@ -95,6 +95,14 @@ export const AuthProvider = ({children}) => {
                 setLoading(false);
                 return
             }
+
+            const snapshot = await firebase
+                .database()
+                .ref('users/' + firebaseUser.uid)
+                .once('value');
+
+            const userData = snapshot.val();
+
             const idToken = await firebaseUser.getIdToken(true);
             setToken(idToken);
 
